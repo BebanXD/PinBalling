@@ -1,79 +1,63 @@
 import pygame
+import numpy as np
 from pathlib import Path
 from inputs import *
 from elements import *
 from collision import *
-
-# Initialize PyGame
-pygame.init()
-
-# Initial window size
-s_width = 600
-s_height = 511
-
-# Define spacetime 
-GRAVITY_X = 0.0
-GRAVITY_Y = 0.3
-DT = 1 # ms (discretization of time) 
-
-# Making display screen
-screen  = pygame.display.set_mode((s_width, s_height), pygame.RESIZABLE)
-bg_orig = pygame.image.load(Path(__file__).parents[0] / Path("bkg.jpg")).convert()
-clock   = pygame.time.Clock()
-
-# Setup 
-running = True
-
-# You could declare components (the initial ball, the other items, ...) here
-
-ball_x = 100
-ball_y = 150
-ball_vx = 0
-ball_vy = 0
- 
-ball_radius = 30
-
-ball2_x = 200
-ball2_y = 150
-ball2_vx = 0
-ball2_vy = 0
-
-ball2_radius = 40
+from functions import *
 
 
-# Main event loop
+#Game Basics
+pygame.init()                   # essential
+pygame.display.set_caption("PinBalling") # window name
+pygame.display.set_icon(pygame.image.load("Image\PINBALLING_LOGO.jpeg")) #window icon
+clock    = pygame.time.Clock()   # essential
+font1    = pygame.font.Font("Misc\DEVIL_LETTERS.otf",50)
+font2    = pygame.font.Font("Misc\FACELESS.ttf",50)
+font3    = pygame.font.Font("Misc\TheGrindeR.ttf",50)
+WINDOW_X = 720
+WINDOW_Y = 1000
+screen   = pygame.display.set_mode([WINDOW_X, WINDOW_Y]) # essential
+
+#general variables
+running = True      # while loop var.
+game_over = False   # check if game over
+Score   = 0         # tracks score
+
+#time
+FPS = 60
+t   = 0
+dt  = 1
+
+#Surfaces
+background = pygame.image.load("Image\Skelleton_Background_0.jpg").convert()
+gameoverscreen= pygame.image.load("Image\GAME_OVER_SCREEN.webp").convert()
+text = font1.render("HELL YEAH",False,"Red")
+gameovertext = font2.render("Final Score: "+str(Score),False,"Red")
+Ball  = pygame.image.load("Image\Skelleton_Background_0.jpg").convert()
 
 while running:
+    t+=dt
     for event in pygame.event.get():  # Get's all the user action (keyboard, mouse, joysticks, ...)
-        continue
+                continue
     keys = pygame.key.get_pressed()
     if keys[pygame.K_ESCAPE]: #kill command
             running = False
     if keys[pygame.K_SPACE]: #sick audio
         pygame.mixer.Sound('Audio\SICK_ASS_RIFF.mp3').play()
+        game_over=True
 
-    # Adjust screen
-    s_width, s_height = screen.get_width(), screen.get_height()
-    bg = pygame.transform.scale(bg_orig, (s_width, s_height))
-    screen.blit(bg, (0, 0)) # redraws background image
-    pygame.display.flip() # Update the display of the full screen
+    if not game_over:
+        # Background
+        screen.blit(background,(0,0))
+        screen.blit(text,(t,30*np.sin(t/60)))
     
-    # Game mechanics
-    ball_vy = ball_vy + GRAVITY_Y*DT
-    ball2_vy = ball2_vy + GRAVITY_Y*DT
 
-    if ball_y >= screen.get_height():
-        ball_vy = ball_vy * (-1)
-    if ball2_y >= screen.get_height():
-        ball2_vy = ball2_vy * (-1)
-
-    ball_y = ball_y + ball_vy*DT + 0.5 * GRAVITY_Y*DT**2
-    ball2_y = ball2_y + ball2_vy*DT + 0.5 * GRAVITY_Y*DT**2
-
-    pygame.draw.circle(screen, (35, 161, 224), [ball_x,ball_y] , ball_radius)
-    pygame.draw.circle(screen, (35, 161, 224), [ball2_x,ball2_y] , ball2_radius)
-
-
+    if game_over:
+        screen.blit(gameoverscreen,(0,0))
+        screen.blit(gameovertext,(0,0))
     
-    clock.tick(60) # 60 frames per second 
+    #Clocktick
+    pygame.display.update()
+    clock.tick(FPS) # 60 frames per second 
 
