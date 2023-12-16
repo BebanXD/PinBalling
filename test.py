@@ -1,23 +1,18 @@
-class Car:
-    def __init__(self, brand, model, year):
-        self.brand = brand
-        self.model = model
-        self.year = year
-        self.running = False
-    
-    def start(self):
-        self.running = True
-        print(f"The {self.year} {self.brand} {self.model} started.")
-    
-    def stop(self):
-        self.running = False
-        print(f"The {self.year} {self.brand} {self.model} stopped.")
+def read_highest_scores(file_path):
+    # Read the file and store scores in a dictionary
+    scores = {}
+    with open(file_path, 'r') as file:
+        for line in file:
+            name, score = line.strip().rsplit(' ', 1)
+            scores[name] = int(score)
 
-# Creating instances of the Car class
-car1 = Car("Toyota", "Corolla", 2020)
-car2 = Car("Tesla", "Model S", 2022)
+    # Sort scores in descending order and retrieve the top 5
+    sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)[:5]
 
-# Using methods of the Car class
-car1.start()
-car2.start()
-car1.stop()
+    # Print the top 5 scores
+    for name, score in sorted_scores:
+        print(f"{name}: {score}")
+
+# Provide the file path here
+file_path = 'Highscores.txt'
+read_highest_scores(file_path)
