@@ -1,4 +1,4 @@
-def read_highest_scores():
+def read_highest_scores(): #reads out top 5 highscores
     output =[]
     scores = {}
     with open('Highscores.txt', 'r') as file:
@@ -14,12 +14,20 @@ def read_highest_scores():
         output.append([name,score])
     return output
 
-def collision_rect (RECT , POINT):
-    if :
-        return 1
-    return 0
+def selection(input,length):
+    return input % length 
+    
+#def radness_handler(level): #input levels from 0 to 5
+    #sound
 
-def collision_circ (CIRC , POINT):
-    if 
-        return 1
-    return 0
+    #text 1
+    #screen.blit(text,(t/50,30*np.sin(t/600)))
+
+    #image 1 
+
+
+    #image 2
+
+    #hyper mode
+        
+

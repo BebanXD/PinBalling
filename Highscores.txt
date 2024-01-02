@@ -4,7 +4,7 @@ asdads 5
 asdasw 4
 asdadsdasdad 0
 asdadsasdbaba 0
-OBAMASL_LEFT_BALL 0
+OBAMASL_LEFT_BALL 125
 asdad 4
 OBAMA 1
 dasd 6
