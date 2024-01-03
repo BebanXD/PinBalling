@@ -1,3 +1,5 @@
+import pygame
+
 def read_highest_scores(): #reads out top 5 highscores
     output =[]
     scores = {}
@@ -16,7 +18,8 @@ def read_highest_scores(): #reads out top 5 highscores
 
 def selection(input,length):
     return input % length 
-    
+
+
 #def radness_handler(level): #input levels from 0 to 5
     #sound
 

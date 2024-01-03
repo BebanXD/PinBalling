@@ -18,20 +18,21 @@ from classes import *
 from constants import *
 
 #game variables
-griddy = 0          # enables grid for testing
+griddy  = True          # enables grid for testing
 running = True      # while loop var.
 score   = 0         # tracks score
 
-game_state          = "play"
+game_state          = "start"
 play_stage          = 1 # default set for quick testing
 ball_type           = 1 # default set for quick testing
-radness_level       = 5 # default set for quick testing
+radness_level       = 4 # default set for quick testing
 selection_phase     = 0
 current_selected    = 0
 counter             = 0
 counter2            = 0
-
-balls_remaining     = 3
+song_counter        = 1 # make 0 to play song
+ballskin_list       = [BALL1,BALL2,BALL3,BALL4]
+ballskin            = ballskin_list[0]
 
 #run game
 while running:
@@ -45,14 +46,11 @@ while running:
 
     #Start
     if game_state == "start": #select stage , select ball , select METELNESS level
-        start_background = pygame.transform.scale(start_background, (WINDOW_X, WINDOW_Y))
         screen.blit(start_background,(0,0))
         #stage select
         screen.blit(stagetext,(150,50))
-        stage1_background = pygame.transform.scale(stage1_background, (250, 250))
-        screen.blit(stage1_background,(100, 150))
-        stage2_background = pygame.transform.scale(stage2_background, (250, 250))
-        screen.blit(stage2_background,(450, 150))    
+        screen.blit(pygame.transform.scale(stage1_background, (250, 250)),(100, 150))
+        screen.blit(pygame.transform.scale(stage2_background, (250, 250)),(450, 150))
         #ball select
         screen.blit(ballstext,(150,450))
         screen.blit(BALL1,(100 - BALL1.get_width() // 2, 600 - BALL1.get_height() // 2))    
@@ -78,6 +76,8 @@ while running:
             pygame.draw.circle(screen, (255, 0, 0), (700, 600), 85, 5)
 
         if selection_phase == 2:
+            #FIREWALL2 = pygame.transform.scale(FIREWALL, (radness_level*(400-10)/4, 50-10))
+            #screen.blit(FIREWALL2,(200, 800+5)) 
             pygame.draw.rect(screen, (0, 0, 0), (200+5, 800+5, radness_level*(400-10)/4, 50-10))
         if radness_level == 5:
             screen.blit(radnesswarning,(50,700))
@@ -107,6 +107,7 @@ while running:
                 current_selected = 0
                 counter += 1
             ball_type = selection(current_selected,4) + 1
+            ballskin  = ballskin_list[ball_type]
         elif selection_phase == 2: #radness select
             if counter == 1: #resets selection to 0 once
                 current_selected = 0
@@ -114,27 +115,46 @@ while running:
             radness_level = selection(current_selected,6)
         elif selection_phase == 3:
             game_state ="play"
-        
     #---------------------------------------------------------------------------------------------------------------
 
     #Game
     if game_state == "play": # main game
+        #input
+
+
         #radness_handler(radness_level)
 
-
         #variables
-        
+        balls_remaining  = 3
+        ball1 = Ball(screen, ballskin, 50, [100, 100], [10, 20], [0, 10])
+        ball2 = Ball(screen, ballskin, 50, [500, 400], [-10, 10], [0, 10])
+        rectangle = Rect(screen, (0, 0, 0), (100, 50), [400, 300], [0, 0])
 
-
-
+        if song_counter == 0:
+            pygame.mixer.Sound('Audio\SONG.mp3').play()
+            song_counter = 1
         if play_stage == 1:
-            stage1_background = pygame.transform.scale(stage1_background, (WINDOW_X, WINDOW_Y))
             screen.blit(stage1_background,(0,0))
-
         if play_stage == 2:
-            stage2_background = pygame.transform.scale(stage2_background, (WINDOW_X, WINDOW_Y))
             screen.blit(stage2_background,(0,0))
+
         
+        ball1.draw()
+        ball2.draw()
+        rectangle.draw()
+
+        ball1.update_position()
+        ball2.update_position()
+        rectangle.update_position()
+
+        ball1.collision_ball(ball2)
+        ball2.collision_ball(ball1)
+
+        ball1.collision_rect(rectangle)
+        ball2.collision_rect(rectangle)
+
+        ball1.collision_window()
+        ball2.collision_window()
     #---------------------------------------------------------------------------------------------------------------
        
     #End
@@ -184,6 +204,7 @@ while running:
             screen.blit(highscore_value_txt, (400,450+x*50))
     #---------------------------------------------------------------------------------------------------------------
     
+    #Gridview
     if griddy == True: #Grid Display 
         for y in range (50,WINDOW_Y+50,50):
             for x in range (50,WINDOW_X+50,50):
@@ -191,6 +212,7 @@ while running:
                 screen.blit(font4.render(f"{(x)}",False,"Red"),(x,0))
                 pygame.draw.line(screen, (0, 0, 255), (0,y), (x,y),3)
                 pygame.draw.line(screen, (0, 0, 255), (x,0), (x,y),3)
+    #---------------------------------------------------------------------------------------------------------------
 
     # Clocktick
     pygame.display.update()
