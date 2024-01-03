@@ -9,7 +9,7 @@ Online Search name
 # Audio
 Sound effects:
 https://www.myinstants.com/de/search/?name=goofy
-
+hell yeah https://www.myinstants.com/de/instant/hell-yeah/
 Eagle  https://www.youtube.com/watch?v=7EEvE-y_P-c
 Raaah  https://www.myinstants.com/de/instant/raaaah-32121/?utm_source=copy&utm_medium=share
 Bad to the bone riff https://www.youtube.com/watch?v=Ad87SqVYizA cut this sound effect
