@@ -1,8 +1,11 @@
 import pygame
 import numpy as np
+from classes import Rect
 
+#double mentioned
 WINDOW_X = 800
 WINDOW_Y = 900
+screen   = pygame.display.set_mode([WINDOW_X, WINDOW_Y]) # essential
 
 #fonts
 font2    = pygame.font.Font("Misc\MetalThorn.ttf",50)
@@ -35,8 +38,14 @@ text = font1.render("HELL YEAH",False,"Red")
 riff = pygame.mixer.Sound("Audio\SICK_ASS_RIFF.mp3").play
 
 #rest
-GRAVITY = 1
-#Shop CONSTANTS
+GRAVITY = [0,1]
+
+
+rec1 = Rect(screen, (0, 255, 0), (100, 50), [400, 300], [0, 0])
+rec2 = Rect(screen, (0, 255, 0), (300, 100), [500, 200], [0, 0])
+REC_LIST1 =[rec1,rec2]
+REC_LIST2 =[rec1,rec2]
+
 
 
 #End CONSTANTS

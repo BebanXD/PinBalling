@@ -1,4 +1,5 @@
 import pygame
+from pygame.locals import *
 import sys #to quit properly
 import numpy as np
 from pathlib import Path
@@ -22,7 +23,10 @@ griddy  = True          # enables grid for testing
 running = True      # while loop var.
 score   = 0         # tracks score
 
-game_state          = "start"
+sound_counter       = 0
+
+
+game_state          = "play" #start play end
 play_stage          = 1 # default set for quick testing
 ball_type           = 1 # default set for quick testing
 radness_level       = 4 # default set for quick testing
@@ -30,19 +34,38 @@ selection_phase     = 0
 current_selected    = 0
 counter             = 0
 counter2            = 0
-song_counter        = 1 # make 0 to play song
 ballskin_list       = [BALL1,BALL2,BALL3,BALL4]
 ballskin            = ballskin_list[0]
+
+max_balls           = 3 #😏
+availible_balls     = max_balls
+ball_list           = []
 
 #run game
 while running:
     #loop based variables
     t = pygame.time.get_ticks() #current time
     keys = pygame.key.get_pressed()  # for holding key pressed, gives input all the time
+    #inputs
     if keys[pygame.K_ESCAPE]: #kill command
         running = False
         break
+    for event in pygame.event.get():
+        # Get's all the user action (keyboard, mouse, joysticks, ...)
+        continue
+        pygame.display.flip() 
     #---------------------------------------------------------------------------------------------------------------
+
+    #sounds
+    if game_state == "start" and sound_counter == 0:
+        pygame.mixer.Sound('Audio\SONG.mp3').play()
+        sound_counter = 1
+    if game_state == "play" and sound_counter == 1:
+        pygame.mixer.Sound('Audio\SONG.mp3').play()
+        sound_counter = 2 
+    if game_state == "end"  and sound_counter == 2:
+        pygame.mixer.Sound('Audio\SONG.mp3').play() 
+
 
     #Start
     if game_state == "start": #select stage , select ball , select METELNESS level
@@ -119,43 +142,46 @@ while running:
 
     #Game
     if game_state == "play": # main game
-        #input
+        for event in pygame.event.get(): #inputs
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_SPACE: #spawns ball
+                    if availible_balls < 0:    
+                        ball_list.append(Ball(screen,ballskin,30,[500,500],[1,1],GRAVITY))
+                        print("appended")
+                        availible_balls -= 1
+                elif event.key == pygame.K_LEFT:
+                    current_selected -= 1
+                elif event.key == pygame.K_RIGHT:
+                    current_selected += 1
 
-
-        #radness_handler(radness_level)
-
-        #variables
-        balls_remaining  = 3
-        ball1 = Ball(screen, ballskin, 50, [100, 100], [10, 20], [0, 10])
-        ball2 = Ball(screen, ballskin, 50, [500, 400], [-10, 10], [0, 10])
-        rectangle = Rect(screen, (0, 0, 0), (100, 50), [400, 300], [0, 0])
-
-        if song_counter == 0:
-            pygame.mixer.Sound('Audio\SONG.mp3').play()
-            song_counter = 1
         if play_stage == 1:
             screen.blit(stage1_background,(0,0))
+            for x in range(len(REC_LIST1)): #handles all rec activity
+                REC_LIST1[x].draw()
+                REC_LIST1[x].update_position()
+
         if play_stage == 2:
             screen.blit(stage2_background,(0,0))
+            for x in range(len(REC_LIST2)): #handles all rec activity
+                REC_LIST2[x].update_position()
+                REC_LIST2[x].draw()
 
+        for x in range(len(ball_list)): #handles all ball collision
+            ball_list[x].update_position()
+            for y in range(len(ball_list)):
+                if y is not x: #dont check collision with self
+                    ball_list[x].collision_ball(ball_list[y])
+            for y in range(len(REC_LIST1)):
+                ball_list[x].collision_rect(REC_LIST1[y])
+            ball_list[x].collision_window()
+            ball_list[x].draw()
+
+        for x in range(availible_balls):
+            screen.blit(pygame.transform.scale(pygame.image.load("Image\LifeSkull.png"), (70, 70)),(25,800-x*70))
         
-        ball1.draw()
-        ball2.draw()
-        rectangle.draw()
-
-        ball1.update_position()
-        ball2.update_position()
-        rectangle.update_position()
-
-        ball1.collision_ball(ball2)
-        ball2.collision_ball(ball1)
-
-        ball1.collision_rect(rectangle)
-        ball2.collision_rect(rectangle)
-
-        ball1.collision_window()
-        ball2.collision_window()
-    #---------------------------------------------------------------------------------------------------------------
+        #radness handler
+        
+        #---------------------------------------------------------------------------------------------------------------
        
     #End
     if game_state == "end": #shows endscreen and manages highscores over games
@@ -210,8 +236,8 @@ while running:
             for x in range (50,WINDOW_X+50,50):
                 screen.blit(font4.render(f"{(y)}",False,"Red"),(0,y))
                 screen.blit(font4.render(f"{(x)}",False,"Red"),(x,0))
-                pygame.draw.line(screen, (0, 0, 255), (0,y), (x,y),3)
-                pygame.draw.line(screen, (0, 0, 255), (x,0), (x,y),3)
+                pygame.draw.line(screen, (0, 0, 255), (0,y), (x,y),1)
+                pygame.draw.line(screen, (0, 0, 255), (x,0), (x,y),1)
     #---------------------------------------------------------------------------------------------------------------
 
     # Clocktick
