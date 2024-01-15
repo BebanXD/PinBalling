@@ -1,8 +1,6 @@
 import pygame
-from pygame.locals import *
 import sys #to quit properly
 import numpy as np
-from pathlib import Path
 
 #Game Basics
 pygame.init()                   # essential
@@ -19,41 +17,37 @@ from classes import *
 from constants import *
 
 #game variables
-griddy  = True          # enables grid for testing
+griddy  = False          # enables grid for testing
 running = True      # while loop var.
 score   = 0         # tracks score
 
-sound_counter       = 0
+sound_counter       = 0 # 0 to play music at start
 
-
-game_state          = "play" #start play end
+game_state          = "start" #start play end
 play_stage          = 1 # default set for quick testing
-ball_type           = 1 # default set for quick testing
+ball_type           = 0 # default set for quick testing
 radness_level       = 4 # default set for quick testing
 selection_phase     = 0
 current_selected    = 0
 counter             = 0
 counter2            = 0
+
 ballskin_list       = [BALL1,BALL2,BALL3,BALL4]
 ballskin            = ballskin_list[0]
 
 max_balls           = 3 #😏
 availible_balls     = max_balls
 ball_list           = []
+initializer         = 0
 
 #run game
 while running:
     #loop based variables
     t = pygame.time.get_ticks() #current time
     keys = pygame.key.get_pressed()  # for holding key pressed, gives input all the time
-    #inputs
     if keys[pygame.K_ESCAPE]: #kill command
         running = False
         break
-    for event in pygame.event.get():
-        # Get's all the user action (keyboard, mouse, joysticks, ...)
-        continue
-        pygame.display.flip() 
     #---------------------------------------------------------------------------------------------------------------
 
     #sounds
@@ -68,7 +62,7 @@ while running:
 
 
     #Start
-    if game_state == "start": #select stage , select ball , select METELNESS level
+    if game_state == "start": #select stage , select ball , select METELNESS level     
         screen.blit(start_background,(0,0))
         #stage select
         screen.blit(stagetext,(150,50))
@@ -89,13 +83,13 @@ while running:
         if play_stage == 2:
             pygame.draw.rect(screen, (255, 0, 0), (450, 150, 250, 250), 5)
     
-        if ball_type == 1:
+        if ball_type == 0:
             pygame.draw.circle(screen, (255, 0, 0), (100, 600), 85, 5)
-        if ball_type == 2:
+        if ball_type == 1:
             pygame.draw.circle(screen, (255, 0, 0), (300, 600), 85, 5)
-        if ball_type == 3:
+        if ball_type == 2:
             pygame.draw.circle(screen, (255, 0, 0), (500, 600), 85, 5)
-        if ball_type == 4:
+        if ball_type == 3:
             pygame.draw.circle(screen, (255, 0, 0), (700, 600), 85, 5)
 
         if selection_phase == 2:
@@ -129,7 +123,7 @@ while running:
             if counter == 0: #resets selection to 0 once
                 current_selected = 0
                 counter += 1
-            ball_type = selection(current_selected,4) + 1
+            ball_type = selection(current_selected,4)
             ballskin  = ballskin_list[ball_type]
         elif selection_phase == 2: #radness select
             if counter == 1: #resets selection to 0 once
@@ -142,12 +136,16 @@ while running:
 
     #Game
     if game_state == "play": # main game
+        #if initializer == 0:
+        #    ball_list.append(Ball(screen,ballskin,40,[500,500],[1,1],GRAVITY))
+         #   ball_list.append(Ball(screen,ballskin,40,[600,500],[1,1],GRAVITY))
+         #   initializer = 1
+
         for event in pygame.event.get(): #inputs
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE: #spawns ball
-                    if availible_balls < 0:    
-                        ball_list.append(Ball(screen,ballskin,30,[500,500],[1,1],GRAVITY))
-                        print("appended")
+                if event.key == pygame.K_SPACE: #spawns ball if balls are left
+                    if availible_balls > 0:    
+                        ball_list.append(Ball(screen,ballskin,1,40,[500,500],[1,1],GRAVITY))
                         availible_balls -= 1
                 elif event.key == pygame.K_LEFT:
                     current_selected -= 1
@@ -171,16 +169,15 @@ while running:
             for y in range(len(ball_list)):
                 if y is not x: #dont check collision with self
                     ball_list[x].collision_ball(ball_list[y])
-            for y in range(len(REC_LIST1)):
+            for y in range(len(REC_LIST1)): #checks all rec collisions
                 ball_list[x].collision_rect(REC_LIST1[y])
             ball_list[x].collision_window()
             ball_list[x].draw()
 
-        for x in range(availible_balls):
+        for x in range(availible_balls): #balls ui
             screen.blit(pygame.transform.scale(pygame.image.load("Image\LifeSkull.png"), (70, 70)),(25,800-x*70))
         
         #radness handler
-        
         #---------------------------------------------------------------------------------------------------------------
        
     #End
@@ -241,6 +238,7 @@ while running:
     #---------------------------------------------------------------------------------------------------------------
 
     # Clocktick
+    pygame.display.flip() #is needed somehow,dont know what it does
     pygame.display.update()
     clock.tick(60) # 60 frames per second 
 

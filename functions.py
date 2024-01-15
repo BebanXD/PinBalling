@@ -1,4 +1,5 @@
 import pygame
+import numpy as np
 
 def read_highest_scores(): #reads out top 5 highscores
     output =[]
@@ -18,23 +19,3 @@ def read_highest_scores(): #reads out top 5 highscores
 
 def selection(input,length):
     return input % length 
-   
-'''
-#def radness_handler(level,Bounds): #input levels from 0 to 5,
-    Bounds[0]
-    Bounds[1]
-    #screen.blit(pygame.transform.scale(pygame.image.load("Image\LifeSkull.png"), (70, 70)),(25,800-x*70))
-
-    #sound
-
-    #text 1
-    #screen.blit(text,(t/50,30*np.sin(t/600)))
-
-    #image 1 
-
-
-    #image 2
-
-    #hyper mode
-'''      
-

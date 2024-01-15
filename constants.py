@@ -42,7 +42,7 @@ GRAVITY = [0,1]
 
 
 rec1 = Rect(screen, (0, 255, 0), (100, 50), [400, 300], [0, 0])
-rec2 = Rect(screen, (0, 255, 0), (300, 100), [500, 200], [0, 0])
+rec2 = Rect(screen, (0, 255, 0), (600, 100), [100, 700], [0, 1])
 REC_LIST1 =[rec1,rec2]
 REC_LIST2 =[rec1,rec2]
 

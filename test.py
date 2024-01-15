@@ -1,21 +1,50 @@
-class MyClass:
-    def __init__(self, value):
-        self.value = value
+import pygame
+import sys
 
-    def example_function(self):
-        print(f"This is an example function of object with value: {self.value}")
+# Initialize Pygame
+pygame.init()
 
-# Create a list to store instances of MyClass
-objects_list = []
+# Set up the screen
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption('Pygame Example')
 
-# Create instances of MyClass and add them to the list
-for i in range(5):
-    obj = MyClass(i)
-    objects_list.append(obj)
+# Colors
+WHITE = (255, 255, 255)
+RED = (255, 0, 0)
 
-# Accessing the function of the third instance in the list (index 2)
-if len(objects_list) >= 3:  # Ensure the list has at least three elements
-    third_obj = objects_list[2]
-    third_obj.example_function()  # Calling the example function of the third object
-else:
-    print("There are not enough objects in the list to call the function of the third instance.")
+# Rectangle properties
+rect_width = 50
+rect_height = 50
+rect_x = (screen_width - rect_width) // 2
+rect_y = (screen_height - rect_height) // 2
+rect_speed = 5
+selection_phase =0
+current_selected =1
+# Game Loop
+running = True
+while running:
+    screen.fill(WHITE)  # Clear the screen with a white background
+
+    for event in pygame.event.get(): #inputs
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                selection_phase += 1
+            elif event.key == pygame.K_LEFT:
+                current_selected -= 1
+            elif event.key == pygame.K_RIGHT:
+                current_selected += 1
+    print(current_selected)
+    # Keep the rectangle within the screen bounds
+
+
+    # Draw the rectangle
+    pygame.draw.rect(screen, RED, (rect_x, rect_y, rect_width, rect_height))
+
+    # Update the display
+    pygame.display.flip()
+
+# Quit Pygame
+pygame.quit()
+sys.exit()
