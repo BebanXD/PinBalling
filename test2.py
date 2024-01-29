@@ -1,34 +1,29 @@
+import unittest
 import pygame
-from pathlib import Path
+from pygame.locals import *
+from classes import Ball
 
-# Initialize PyGame
-pygame.init()
+class TestBall(unittest.TestCase):
 
-# Initial window size
-s_width = 600
-s_height = 800
+    def setUp(self):
+        pygame.init()
+        self.screen = pygame.display.set_mode((800, 900))
+        self.ball = Ball(self.screen, pygame.image.load("ball.png"), 0.5, 20, (400, 500), (5, 5), (0, -9.8), (0, 0.5))
 
-# Define spacetime 
-GRAVITY_X = 0.0
-GRAVITY_Y = 0.3
-DT = 1 # ms (discretization of time) 
+    def tearDown(self):
+        pygame.quit()
 
-# Making display screen
-screen = pygame.display.set_mode((s_width, s_height), pygame.RESIZABLE)
-clock = pygame.time.Clock()
+    def test_ball_stays_in_window(self):
+        self.ball._position = (-100, -100)
+        self.ball.collision_window()
+        self.assertTrue(self.ball._position[0] >= 0 and self.ball._position[0] <= 800)
+        self.assertTrue(self.ball._position[1] >= 0 and self.ball._position[1] <= 900)
 
-# Setup 
-running = True
+    def test_ball_velocity_reversed_on_window_collision(self):
+        self.ball._position = (800, 900)
+        self.ball.collision_window()
+        self.assertEqual(self.ball._velocity[0], -self.ball._velocity[0])
+        self.assertEqual(self.ball._velocity[1], -self.ball._velocity[1])
 
-# You could declare components (the initial ball, the other items, ...) here
-
-# Main event loop
-while running:
-    for event in pygame.event.get():
-        # Get's all the user action (keyboard, mouse, joysticks, ...)
-        continue
-
-        pygame.display.flip() # Update the display of the full screen
-    clock.tick(60) # 60 frames per second
-
-# Done! Time to quit.
+if __name__ == '__main__':
+    unittest.main()

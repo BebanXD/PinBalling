@@ -1,6 +1,6 @@
 import pygame
 import numpy as np
-from classes import Rect
+from classes import Line
 
 #double mentioned
 WINDOW_X = 800
@@ -33,29 +33,39 @@ radnesswarning= font3.render("WARNING! OVERLOAD DETECTED",False,"Red")
 
 
 #Play CONSTANTS
+FIRE1 = pygame.transform.scale(pygame.image.load("Image\FIRE1.png"), (300, 100))
+FIRE2 = pygame.transform.scale(pygame.image.load("Image\FIRE2.png"), (300, 100))
+FIRE3 = pygame.transform.scale(pygame.image.load("Image\FIRE3.png"), (300, 100))
+FIRE4 = pygame.transform.scale(pygame.image.load("Image\FIRE4.png"), (300, 100))
+FIRELIST = [FIRE1,FIRE2,FIRE3,FIRE4]
+
 #radness
 text = font1.render("HELL YEAH",False,"Red")
 riff = pygame.mixer.Sound("Audio\SICK_ASS_RIFF.mp3").play
 
 #rest
-GRAVITY = [0,1]
+GRAVITY = [0,1] #gravity in (x,y)
 
+#           screen, color, size, bounce, points, position[[][]], velocity[]
+Line1= Line(screen, (0,0,0), 50, 1, 1, [[250,800],[500,700]], [0,0])
+Line2= Line(screen, (0,0,0), 50, 1, 1, [[400,700],[500,300]], [0,0])
+Line2= Line(screen, (0,0,0), 50, 1, 1, [[400,700],[500,300]], [0,0])
 
-rec1 = Rect(screen, (0, 255, 0), (100, 50), [400, 300], [0, 0])
-rec2 = Rect(screen, (0, 255, 0), (600, 100), [100, 700], [0, 1])
-REC_LIST1 =[rec1,rec2]
-REC_LIST2 =[rec1,rec2]
+LINE_LIST = []
 
 
 
 #End CONSTANTS
 gameoverscreen = pygame.transform.scale(pygame.image.load("Image\END_SCREEN.webp").convert(), (WINDOW_X, WINDOW_Y))
 
-record_txt       = font2.render("Record your legacy:",False,"Red")
+record_txt       = font2.render("RECORD YOUR LEGACY:",False,"Red")
 highscore_txt    = font2.render("HIGHSCORES:",False,"Red")
-record_error_txt = font2.render("Score already submitted:",False,"Red")
-submitted_txt    = font2.render("Score submitted:",False,"Red")
+
+record_error_txt = font2.render("SCORE ALREADY SUBMITTED:",False,"Red")
+short_error_txt  = font2.render ("NAME TO SHORT!",False,"Red")
+long_error_txt   = font2.render ("NAME TO LONG!",False,"Red")
+submitted_txt    = font2.render("SCORE SUBMITTED:",False,"Red")
+
 input_string        = ""
 error_event_counter = 0
-record_counter      = 1
-submitted_counter   = 0
+record_counter      = 0

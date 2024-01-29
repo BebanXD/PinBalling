@@ -8,4 +8,10 @@ OBAMASL_LEFT_BALL 125
 asdad 4
 OBAMA 1
 dasd 6
-dfsdf 0
+OBAMASL_LEFT_BALL 123
+asdad 4
+OBAMA 1
+asdas 0
+asdasdasdasd 0
+sadasd 0
+asdasdasd 0

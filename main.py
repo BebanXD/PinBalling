@@ -11,34 +11,34 @@ WINDOW_X = 800
 WINDOW_Y = 900
 screen   = pygame.display.set_mode([WINDOW_X, WINDOW_Y]) # essential
 
+#game variables
+
 #get imports
 from functions import *
 from classes import *
 from constants import *
+from variables import *
 
 #game variables
-griddy  = False          # enables grid for testing
+griddy  = True          # enables grid for testing
 running = True      # while loop var.
-score   = 0         # tracks score
 
 sound_counter       = 0 # 0 to play music at start
-
-game_state          = "start" #start play end
+game_state          = "play" #start play end
 play_stage          = 1 # default set for quick testing
-ball_type           = 0 # default set for quick testing
-radness_level       = 4 # default set for quick testing
+
+ball_type           = 0 # default set for quick testing # from 0 to 3
+radness_level       = 5 # default set for quick testing # from 0 to 5
 selection_phase     = 0
 current_selected    = 0
 counter             = 0
-counter2            = 0
-
 ballskin_list       = [BALL1,BALL2,BALL3,BALL4]
 ballskin            = ballskin_list[0]
 
+counter2            = 0
 max_balls           = 3 #😏
 availible_balls     = max_balls
 ball_list           = []
-initializer         = 0
 
 #run game
 while running:
@@ -58,7 +58,7 @@ while running:
         pygame.mixer.Sound('Audio\SONG.mp3').play()
         sound_counter = 2 
     if game_state == "end"  and sound_counter == 2:
-        pygame.mixer.Sound('Audio\SONG.mp3').play() 
+        pygame.mixer.Sound('Audio\SONG_SAD.mp3').play() 
 
 
     #Start
@@ -136,95 +136,113 @@ while running:
 
     #Game
     if game_state == "play": # main game
-        #if initializer == 0:
-        #    ball_list.append(Ball(screen,ballskin,40,[500,500],[1,1],GRAVITY))
-         #   ball_list.append(Ball(screen,ballskin,40,[600,500],[1,1],GRAVITY))
-         #   initializer = 1
+        #background
+        if play_stage == 1:
+            screen.blit(stage1_background,(0,0))
+        if play_stage == 2:
+            screen.blit(stage2_background,(0,0))
+        screen.blit(FIRELIST[(int(t/150))%4],(250,800))
 
+        for x in range(len(LINE_LIST)): #checks all rec collisions
+            LINE_LIST[x].draw()
+
+        #inputs
         for event in pygame.event.get(): #inputs
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE: #spawns ball if balls are left
                     if availible_balls > 0:    
-                        ball_list.append(Ball(screen,ballskin,1,40,[500,500],[1,1],GRAVITY))
+                        ball_list.append(Ball(screen,ballskin,1,30,[500,500],[1,1],GRAVITY))
                         availible_balls -= 1
                 elif event.key == pygame.K_LEFT:
                     current_selected -= 1
                 elif event.key == pygame.K_RIGHT:
                     current_selected += 1
 
-        if play_stage == 1:
-            screen.blit(stage1_background,(0,0))
-            for x in range(len(REC_LIST1)): #handles all rec activity
-                REC_LIST1[x].draw()
-                REC_LIST1[x].update_position()
-
-        if play_stage == 2:
-            screen.blit(stage2_background,(0,0))
-            for x in range(len(REC_LIST2)): #handles all rec activity
-                REC_LIST2[x].update_position()
-                REC_LIST2[x].draw()
-
-        for x in range(len(ball_list)): #handles all ball collision
+        
+        #ball handler
+        for x in range(len(ball_list)):
             ball_list[x].update_position()
             for y in range(len(ball_list)):
                 if y is not x: #dont check collision with self
                     ball_list[x].collision_ball(ball_list[y])
-            for y in range(len(REC_LIST1)): #checks all rec collisions
-                ball_list[x].collision_rect(REC_LIST1[y])
+            for y in range(len(LINE_LIST)): #checks all rec collisions
+                ball_list[x].collision_line(LINE_LIST[y])
+                
             ball_list[x].collision_window()
             ball_list[x].draw()
 
+            if ((250 < ball_list[x]._position[0])and(ball_list[x]._position[0]<550))and (ball_list[x]._position[1]>800):
+                ball_list.remove(ball_list[x]) #removes ball privilegs
+                break
+
+        #UI
         for x in range(availible_balls): #balls ui
             screen.blit(pygame.transform.scale(pygame.image.load("Image\LifeSkull.png"), (70, 70)),(25,800-x*70))
+        screen.blit(font3.render(f"{(variables.score)}",False,"Red"),(45,45))
         
+        #lose condition
+        if (availible_balls==0) and (len(ball_list)==0):
+            game_state = "end"
+
         #radness handler
+
         #---------------------------------------------------------------------------------------------------------------
        
     #End
     if game_state == "end": #shows endscreen and manages highscores over games
         
         #End Display
-        gameover_txt = font2.render("Final Score: "+ str(score),False,"Red")
-        input_txt    = font2.render(input_string,False,"Red")
+        gameover_txt = font3.render("Final Score: "+ str(score),False,"Red")
+        input_txt    = font3.render(input_string,False,"White")
 
         #your score and input
-        screen.blit(gameoverscreen, (0,0))
-        screen.blit(gameover_txt,   (0,50))
-        screen.blit(record_txt,     (0,100))
-        screen.blit(input_txt,      (0,150))
-        screen.blit(highscore_txt,      (0,400))
-        if error_event_counter:
-            submitted_counter = 0
-            screen.blit(record_error_txt,(0,250))
-        if submitted_counter:
-            screen.blit(submitted_txt,(0,250))
+        screen.blit(gameoverscreen, (150,0))
+        screen.blit(gameover_txt,   (150,50))
+        screen.blit(record_txt,     (150,100))
+        screen.blit(input_txt,      (150,150))
+        screen.blit(highscore_txt,      (150,400))
+        if error_event_counter == 1:
+            screen.blit(short_error_txt,(150,250))
+        if error_event_counter == 2:
+            screen.blit(long_error_txt,(150,250))
+        if error_event_counter == 3:
+            screen.blit(submitted_txt,(150,250))
+        if error_event_counter == 4:
+            screen.blit(record_error_txt,(150,250))
+
 
         #input for name into highscore list
         for event in pygame.event.get(): # for pressing key once
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_BACKSPACE:
+                if (event.key == pygame.K_BACKSPACE) and (record_counter == 0):  #can only change if not submitted already
                     input_string = input_string[:-1]
                 elif event.key == pygame.K_SPACE:
                     print() #does nothing #so no space is messing up the highscore function
-                elif event.key == pygame.K_KP_ENTER:
-                    if(len(input_string) == 0 ):
-                        print("enter")
-                    elif record_counter == 1:
-                        record_counter = 0
+                elif (event.key == pygame.K_KP_ENTER) or (event.key == pygame.K_RETURN):
+                    if (len(input_string) == 0) :
+                        error_event_counter = 1
+                        break
+                    if (len(input_string) > 15) :
+                        error_event_counter = 2
+                        break
+                    elif record_counter == 0:
+                        record_counter = 1
+                        error_event_counter = 3 #eigentlich kein error aber egal
                         with open("Highscores.txt", "a") as file:
                             file.write(input_string + " " + str(score) + '\n')
-                        submitted_counter = 1
                     else:
-                         error_event_counter = 1   
+                         error_event_counter = 4
+                         if radness_level == 5:  pygame.mixer.Sound('Audio\SICK_ASS_RIFF.mp3').play()  
                 else:
-                    input_string += event.unicode  
-        
-        # top ten highscores
+                    if (record_counter == 0): #can only change if not submitted already
+                        input_string += event.unicode  
+
+        # top 5 highscores
         for x in range(len(read_highest_scores())):
             highscore_name_txt = font3.render(str(read_highest_scores()[x][0]),False,"Red")
-            screen.blit(highscore_name_txt,  (0,450+x*50))
+            screen.blit(highscore_name_txt,  (150,450+x*50))
             highscore_value_txt = font3.render(str(read_highest_scores()[x][1]),False,"Red")
-            screen.blit(highscore_value_txt, (400,450+x*50))
+            screen.blit(highscore_value_txt, (600,450+x*50))
     #---------------------------------------------------------------------------------------------------------------
     
     #Gridview

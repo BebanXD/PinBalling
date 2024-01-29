@@ -1,5 +1,8 @@
 import pygame
+import math
 import numpy as np
+
+import variables
 
 #tripple copy
 WINDOW_X = 800
@@ -25,54 +28,63 @@ class Ball:
         self._velocity[1] += self._gravity[1]
         self._position[0] += self._velocity[0]
         self._position[1] += self._velocity[1]
-    #collision start
-    def surface(self, x): #gives back point on its surface
-        return [np.sin(x)*self._radius + self._position, np.cos(x)*self._radius +self._position]
-    def surface_collision(self,x,v): #checks where ball touches for diffrent outcomes 
-        self._velocity[0] = (self._velocity[0] + v[0])*np.cos(2*x)
-        self._velocity[1] = (self._velocity[1] + v[1])*(-np.cos(2*x))
+
+    @staticmethod
+    def change_score(Wert):
+        variables.score = variables.score + Wert
+
     def collision_ball(self, ball): #vllt noch zu primitiv vllt noch geschw. berücksichtigen ect.
         distance = ((self._position[0] - ball.get_position()[0]) ** 2 + (self._position[1] - ball.get_position()[1]) ** 2) ** 0.5
         if distance <= self._radius + ball._radius:
             self._velocity[0] *= -1
             self._velocity[1] *= -1
-    def collision_rect(self, rect): 
-        x_intervall = [rect._position[0],rect._position[0]+rect._size[0]]
-        y_intervall = [rect._position[1],rect._position[1]+rect._size[1]]
-        resolution = 4
-        for x in np.linspace(0,2*np.pi,resolution+1): #checks 8 points on the circle
-            surface_point = self.surface(x)[0]
-            if ((x_intervall[0]<=surface_point[0]) and (x_intervall[1]>=surface_point[0])) and ((y_intervall[0]<=surface_point[1]) and (y_intervall[1]>=surface_point[1])):
-                self.surface_collision(x,rect._velocity)
+            self.change_score(1)
+
+    @staticmethod 
+    def collision_checker(Ball_point, radius, Start_point, End_point, thickness):
+        zähler = abs((End_point[0] - Start_point[0]) * (Start_point[1] - Ball_point[1]) + (Start_point[1] - End_point[1]) * (Start_point[0] - Ball_point[0]))
+        nenner = math.sqrt((End_point[0] - Start_point[0])**2 + (End_point[1] - Start_point[1])**2)
+        distance = zähler / nenner
+        return distance <= (thickness + radius) #maybe durch 2 für thickness machen idk
+
+    def collision_line(self, obj):
+        if self.collision_checker(self._position, self._radius, obj._position[0], obj._position[1], obj._size):
+            self._velocity[0] = -(self._velocity[0] + obj._velocity[0]) * obj._bounce
+            self._velocity[1] = -(self._velocity[1] + obj._velocity[1]) * obj._bounce
+            self._position[0] += 5 *(self._velocity[0]/abs(self._velocity[0]))  #bugfix to make some space between collision
+            self._position[1] += 5 *(self._velocity[1]/abs(self._velocity[1]))  #bugfix to make some space between collision
+
+            self.change_score(obj._points)
+
     def collision_window(self):  #needs to be last for ball to stay inside of window   #alternativ auch mit geschw. vektor richtung bestimmen und zukünfitge kollision prüfen #vllt besser für stationäre Grenzen
         if self._position[0] - self._radius < 0 or self._position[0] + self._radius > WINDOW_X:
             self._velocity[0] *= -1
+            self._position[0] += 5 *(self._velocity[0]/abs(self._velocity[0]))  #bugfix to make some space between collision
         if self._position[1] - self._radius < 0 or self._position[1] + self._radius > WINDOW_Y:
             self._velocity[1] *= -1
-    #visualization
-    def draw(self):
+            self._position[1] += 5 *(self._velocity[1]/abs(self._velocity[1]))  #bugfix to make some space between collision
+            score = score + obj._points
+    def draw(self):  #visualization
         self._screen.blit(self._skin,(self._position[0] - self._skin.get_width() // 2, self._position[1] - self._skin.get_height() // 2))    
         pygame.draw.circle(self._screen, (255, 255, 255), [self._position[0],self._position[1]] , self._radius,5)
-    def deletion(self):
-        del self
 
-class Rect:
-    def __init__(self, screen, color, size, position, velocity):
+class Line:
+    def __init__(self, screen, color, size, bounce, points, position, velocity):
         self._screen = screen
         self._color = color
         self._size = size
+        self._bounce = bounce
+        self._points = points
         self._position = position
         self._velocity = velocity
-    # access data
-    def get_position(self):
+    def get_position(self): 
         return self._position
-    def get_size(self):
-        return self._size
     def get_velocity(self):
         return self._velocity
-    # run follwoing every loop 
     def update_position(self):
-        self._position[0] += self._velocity[0]
-        self._position[1] += self._velocity[1]
+        self._position[0][0] += self._velocity[0]
+        self._position[1][0] += self._velocity[0]
+        self._position[0][1] += self._velocity[1]
+        self._position[1][1] += self._velocity[1]
     def draw(self):
-        pygame.draw.rect(self._screen, self._color, (self._position, self._size))
+        pygame.draw.line(self._screen, self._color, self._position[0], self._position[1], self._size)
