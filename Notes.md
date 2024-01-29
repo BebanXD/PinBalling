@@ -1,10 +1,11 @@
 # Ideas
 Shop trade highscore vs more balls. better bounce, multiplier and special abilities
+Diffrent Maps
 Random Events like: 
 Spooky Ball, y und x grav haben sin(x) compoenente addiert für 3 sec ca.
 
 # Font
-Online Search name
+Online Search for the name
 
 # Audio
 Sound effects:
@@ -16,7 +17,7 @@ Bad to the bone riff https://www.youtube.com/watch?v=Ad87SqVYizA cut this sound 
 
 Copy right free music  https://www.youtube.com/watch?v=DpxZ5PHa6xo
 Song1 https://www.youtube.com/watch?v=jRRvnkP2rM4
-Song2 
+Song2 https://www.youtube.com/watch?v=jRRvnkP2rM4
 
 # Image
 Either reverse image search it 

@@ -4,13 +4,11 @@ asdads 5
 asdasw 4
 asdadsdasdad 0
 asdadsasdbaba 0
-OBAMASL_LEFT_BALL 125
 asdad 4
-OBAMA 1
+OBAMA_BALLS 151
 dasd 6
-OBAMASL_LEFT_BALL 123
 asdad 4
-OBAMA 1
+OBAMIUM 441
 asdas 0
 asdasdasdasd 0
 sadasd 0
