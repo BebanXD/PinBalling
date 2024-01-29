@@ -39,6 +39,9 @@ counter2            = 0
 max_balls           = 3 #😏
 availible_balls     = max_balls
 ball_list           = []
+left_trigger        = 0
+right_trigger       = 0
+
 
 #run game
 while running:
@@ -136,15 +139,10 @@ while running:
 
     #Game
     if game_state == "play": # main game
-        #background
-        if play_stage == 1:
-            screen.blit(stage1_background,(0,0))
-        if play_stage == 2:
-            screen.blit(stage2_background,(0,0))
-        screen.blit(FIRELIST[(int(t/150))%4],(250,800))
-
-        for x in range(len(LINE_LIST)): #checks all rec collisions
-            LINE_LIST[x].draw()
+        if left_trigger > -np.pi/4 :
+            left_trigger  -= 0.05
+        if right_trigger > -np.pi/4 :
+            right_trigger -= 0.05
 
         #inputs
         for event in pygame.event.get(): #inputs
@@ -153,10 +151,27 @@ while running:
                     if availible_balls > 0:    
                         ball_list.append(Ball(screen,ballskin,1,30,[500,500],[1,1],GRAVITY))
                         availible_balls -= 1
-                elif event.key == pygame.K_LEFT:
-                    current_selected -= 1
-                elif event.key == pygame.K_RIGHT:
-                    current_selected += 1
+        if keys[pygame.K_LEFT] :
+            if left_trigger < np.pi/4 :
+                left_trigger += 0.5
+        if keys[pygame.K_RIGHT]:
+            if right_trigger < np.pi/4 :
+                right_trigger += 0.5
+        
+        #Flippers
+        LINE_LIST[0] = Line(screen, (255,255,255), 20, 1, 1, [[250,800],[250+FLIPPER_LENGTH*np.cos(-left_trigger) ,800+FLIPPER_LENGTH*np.sin(-left_trigger) ]], [0,0])#left
+        LINE_LIST[1] = Line(screen, (255,255,255), 20, 1, 1, [[550,800],[550-FLIPPER_LENGTH*np.cos(-right_trigger),800+FLIPPER_LENGTH*np.sin(-right_trigger)]], [0,0])#right
+
+        #background
+        if play_stage == 1:
+            screen.blit(stage1_background,(0,0))
+        if play_stage == 2:
+            screen.blit(stage2_background,(0,0))
+        screen.blit(FIRELIST[(int(t/150))%4],(250,800))
+
+        #draw all objects
+        for x in range(len(LINE_LIST)): 
+            LINE_LIST[x].draw()
 
         
         #ball handler
@@ -171,21 +186,22 @@ while running:
             ball_list[x].collision_window()
             ball_list[x].draw()
 
-            if ((250 < ball_list[x]._position[0])and(ball_list[x]._position[0]<550))and (ball_list[x]._position[1]>800):
+            if (ball_list[x]._position[1]>850):
                 ball_list.remove(ball_list[x]) #removes ball privilegs
                 break
 
-        #UI
-        for x in range(availible_balls): #balls ui
-            screen.blit(pygame.transform.scale(pygame.image.load("Image\LifeSkull.png"), (70, 70)),(25,800-x*70))
-        screen.blit(font3.render(f"{(variables.score)}",False,"Red"),(45,45))
-        
         #lose condition
         if (availible_balls==0) and (len(ball_list)==0):
             game_state = "end"
 
         #radness handler
-
+        #missing content ?
+            
+        #UI Overlay
+        for x in range(availible_balls): #balls ui
+            screen.blit(pygame.transform.scale(pygame.image.load("Image\LifeSkull.png"), (70, 70)),(25,800-x*70))
+        screen.blit(font3.render(f"{(variables.score)}",False,"Red"),(45,45))
+        
         #---------------------------------------------------------------------------------------------------------------
        
     #End
@@ -196,7 +212,7 @@ while running:
         input_txt    = font3.render(input_string,False,"White")
 
         #your score and input
-        screen.blit(gameoverscreen, (150,0))
+        screen.blit(gameoverscreen, (0,0))
         screen.blit(gameover_txt,   (150,50))
         screen.blit(record_txt,     (150,100))
         screen.blit(input_txt,      (150,150))

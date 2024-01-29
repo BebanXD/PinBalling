@@ -45,13 +45,12 @@ riff = pygame.mixer.Sound("Audio\SICK_ASS_RIFF.mp3").play
 
 #rest
 GRAVITY = [0,1] #gravity in (x,y)
-
+FLIPPER_LENGTH = 100
 #           screen, color, size, bounce, points, position[[][]], velocity[]
-Line1= Line(screen, (0,0,0), 50, 1, 1, [[250,800],[500,700]], [0,0])
-Line2= Line(screen, (0,0,0), 50, 1, 1, [[400,700],[500,300]], [0,0])
-Line2= Line(screen, (0,0,0), 50, 1, 1, [[400,700],[500,300]], [0,0])
-
-LINE_LIST = []
+LINE1= Line(screen, (0,0,0), 50, 1, 1, [[0,650],[250,800]], [0,0])
+LINE2= Line(screen, (0,0,0), 50, 1, 1, [[550,800],[800,650]], [0,0])
+LINE3= Line(screen, (0,0,0), 50, 1, 1, [[400,700],[500,300]], [0,0])
+LINE_LIST = ["","",LINE1,LINE2] #ersten zwei eintägen werden jeden Loop überarbeitet
 
 
 

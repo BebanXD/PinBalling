@@ -87,4 +87,6 @@ class Line:
         self._position[0][1] += self._velocity[1]
         self._position[1][1] += self._velocity[1]
     def draw(self):
+        pygame.draw.line(self._screen, (255,255,255), self._position[0], self._position[1], self._size+5) #line in background for outline
         pygame.draw.line(self._screen, self._color, self._position[0], self._position[1], self._size)
+
