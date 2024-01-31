@@ -20,11 +20,11 @@ from constants import *
 from variables import *
 
 #game variables
-griddy  = True          # enables grid for testing
+griddy  = True      # enables grid for testing
 running = True      # while loop var.
 
 sound_counter       = 0 # 0 to play music at start
-game_state          = "play" #start play end
+game_state          = "start" #start play end
 play_stage          = 1 # default set for quick testing
 
 ball_type           = 0 # default set for quick testing # from 0 to 3
@@ -35,13 +35,14 @@ counter             = 0
 ballskin_list       = [BALL1,BALL2,BALL3,BALL4]
 ballskin            = ballskin_list[0]
 
-counter2            = 0
+counter2            = 0 
 max_balls           = 3 #😏
 availible_balls     = max_balls
 ball_list           = []
 left_trigger        = 0
-right_trigger       = 0
-
+right_trigger       = 0 
+charge              = 0 # powermeter für Abschussrampe 
+t_old               = 0 # time diff const, at point of ballspawn, for ball not to spawn
 
 #run game
 while running:
@@ -112,7 +113,7 @@ while running:
         #input
         for event in pygame.event.get(): #inputs
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
+                if (event.key == pygame.K_SPACE) or (event.key == pygame.K_RETURN) or (event.key == pygame.K_KP_ENTER):
                     selection_phase += 1
                 elif event.key == pygame.K_LEFT:
                     current_selected -= 1
@@ -143,14 +144,21 @@ while running:
             left_trigger  -= 0.05
         if right_trigger > -np.pi/4 :
             right_trigger -= 0.05
+        if charge > 0:
+            charge -= 1
 
         #inputs
         for event in pygame.event.get(): #inputs
             if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE: #spawns ball if balls are left
-                    if availible_balls > 0:    
-                        ball_list.append(Ball(screen,ballskin,1,30,[500,500],[1,1],GRAVITY))
+                if (event.key == pygame.K_RETURN) or (event.key == pygame.K_KP_ENTER)  : #spawns ball if balls are left
+                    
+                    if (availible_balls > 0) and t> t_old + 120 :    
+                        ball_list.append(Ball(screen,ballskin,1,30,[500,500],[0,-charge/4],GRAVITY))
                         availible_balls -= 1
+                        t_old=t
+                if (event.key == pygame.K_SPACE):
+                    if charge < 100:
+                        charge += 5
         if keys[pygame.K_LEFT] :
             if left_trigger < np.pi/4 :
                 left_trigger += 0.5
@@ -201,6 +209,9 @@ while running:
         for x in range(availible_balls): #balls ui
             screen.blit(pygame.transform.scale(pygame.image.load("Image\LifeSkull.png"), (70, 70)),(25,800-x*70))
         screen.blit(font3.render(f"{(variables.score)}",False,"Red"),(45,45))
+        pygame.draw.rect(screen, (0, 0, 0),   (700-5, 875-(2*100)-5, 50+10, 400+10), 5) #chargemeter background
+        pygame.draw.rect(screen, (255, 0, 0), (700, 875-(2*charge), 50, 4*(charge))) #chargemeter
+
         
         #---------------------------------------------------------------------------------------------------------------
        
@@ -208,7 +219,7 @@ while running:
     if game_state == "end": #shows endscreen and manages highscores over games
         
         #End Display
-        gameover_txt = font3.render("Final Score: "+ str(score),False,"Red")
+        gameover_txt = font3.render("Final Score: "+ str(variables.score),False,"Red")
         input_txt    = font3.render(input_string,False,"White")
 
         #your score and input
@@ -245,7 +256,7 @@ while running:
                         record_counter = 1
                         error_event_counter = 3 #eigentlich kein error aber egal
                         with open("Highscores.txt", "a") as file:
-                            file.write(input_string + " " + str(score) + '\n')
+                            file.write(input_string + " " + str(variables.score) + '\n')
                     else:
                          error_event_counter = 4
                          if radness_level == 5:  pygame.mixer.Sound('Audio\SICK_ASS_RIFF.mp3').play()  

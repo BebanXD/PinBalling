@@ -45,15 +45,15 @@ class Ball:
         zähler = abs((End_point[0] - Start_point[0]) * (Start_point[1] - Ball_point[1]) + (Start_point[1] - End_point[1]) * (Start_point[0] - Ball_point[0]))
         nenner = math.sqrt((End_point[0] - Start_point[0])**2 + (End_point[1] - Start_point[1])**2)
         distance = zähler / nenner
-        return distance <= (thickness + radius) #maybe durch 2 für thickness machen idk
+        return distance <= (thickness/2 + radius) #maybe durch 2 für thickness machen idk
 
     def collision_line(self, obj):
         if self.collision_checker(self._position, self._radius, obj._position[0], obj._position[1], obj._size):
             self._velocity[0] = -(self._velocity[0] + obj._velocity[0]) * obj._bounce
             self._velocity[1] = -(self._velocity[1] + obj._velocity[1]) * obj._bounce
-            self._position[0] += 5 *(self._velocity[0]/abs(self._velocity[0]))  #bugfix to make some space between collision
-            self._position[1] += 5 *(self._velocity[1]/abs(self._velocity[1]))  #bugfix to make some space between collision
-
+            if not (self._velocity[0] == 0  or self._velocity[1] ==0): #quick division 0 fix
+                self._position[0] += 5 *(self._velocity[0]/abs(self._velocity[0]))  #bugfix to make some space between collision
+                self._position[1] += 5 *(self._velocity[1]/abs(self._velocity[1]))  #bugfix to make some space between collision
             self.change_score(obj._points)
 
     def collision_window(self):  #needs to be last for ball to stay inside of window   #alternativ auch mit geschw. vektor richtung bestimmen und zukünfitge kollision prüfen #vllt besser für stationäre Grenzen

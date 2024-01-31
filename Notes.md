@@ -1,3 +1,9 @@
+#Controlls
+Pfeiltasten links rechts
+Leertaste, Enter
+
+
+
 # Ideas
 Shop trade highscore vs more balls. better bounce, multiplier and special abilities
 Diffrent Maps

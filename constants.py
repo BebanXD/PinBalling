@@ -49,21 +49,21 @@ FLIPPER_LENGTH = 100
 #           screen, color, size, bounce, points, position[[][]], velocity[]
 LINE1= Line(screen, (0,0,0), 50, 1, 1, [[0,650],[250,800]], [0,0])
 LINE2= Line(screen, (0,0,0), 50, 1, 1, [[550,800],[800,650]], [0,0])
-LINE3= Line(screen, (0,0,0), 50, 1, 1, [[400,700],[500,300]], [0,0])
-LINE_LIST = ["","",LINE1,LINE2] #ersten zwei eintägen werden jeden Loop überarbeitet
+LINE3= Line(screen, (0,0,0), 50, 1, 1, [[0,700],[800,700]], [0,0])
+LINE_LIST = ["here is flipper_L", "here is flipper_R", LINE1, LINE2, LINE3] #ersten zwei eintägen werden jeden Loop überarbeitet
 
 
 
 #End CONSTANTS
 gameoverscreen = pygame.transform.scale(pygame.image.load("Image\END_SCREEN.webp").convert(), (WINDOW_X, WINDOW_Y))
 
-record_txt       = font2.render("RECORD YOUR LEGACY:",False,"Red")
-highscore_txt    = font2.render("HIGHSCORES:",False,"Red")
+record_txt       = font2.render ("RECORD YOUR LEGACY:",False,"Red")
+highscore_txt    = font2.render ("HIGHSCORES:",False,"Red")
 
-record_error_txt = font2.render("SCORE ALREADY SUBMITTED:",False,"Red")
+record_error_txt = font2.render ("SCORE ALREADY SUBMITTED:",False,"Red")
 short_error_txt  = font2.render ("NAME TO SHORT!",False,"Red")
 long_error_txt   = font2.render ("NAME TO LONG!",False,"Red")
-submitted_txt    = font2.render("SCORE SUBMITTED:",False,"Red")
+submitted_txt    = font2.render ("SCORE SUBMITTED:",False,"Red")
 
 input_string        = ""
 error_event_counter = 0
