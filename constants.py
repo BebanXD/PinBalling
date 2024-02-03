@@ -1,15 +1,13 @@
 import pygame
 import numpy as np
-from classes import Line
 
-#double mentioned
 WINDOW_X = 800
 WINDOW_Y = 900
 screen   = pygame.display.set_mode([WINDOW_X, WINDOW_Y]) # essential
 
 #fonts
-font2    = pygame.font.Font("Misc\MetalThorn.ttf",50)
 font1    = pygame.font.Font("Misc\WhoAsksSatan.ttf",50)
+font2    = pygame.font.Font("Misc\MetalThorn.ttf",50)
 font3    = pygame.font.Font("Misc\RythmOfDeath.ttf",60)
 font4    = pygame.font.Font("Misc\RythmOfDeath.ttf",30)
 
@@ -26,6 +24,7 @@ BALL1 = pygame.transform.scale(pygame.image.load("Image\BALL_1.png"), (200, 200)
 BALL2 = pygame.transform.scale(pygame.image.load("Image\BALL_2.png"), (250, 250))
 BALL3 = pygame.transform.scale(pygame.image.load("Image\BALL_3.png"), (200, 200))
 BALL4 = pygame.transform.scale(pygame.image.load("Image\BALL_4.png"), (200, 200))
+BALLSKIN_LIST = [BALL1,BALL2,BALL3,BALL4]  # List of skins
 
 radnesstext = font3.render("CHOOSE RADNESS LEVEL",False,"Red")
 FIREWALL = pygame.image.load("Image\FIREWALL.jpg")
@@ -37,21 +36,16 @@ FIRE1 = pygame.transform.scale(pygame.image.load("Image\FIRE1.png"), (300, 100))
 FIRE2 = pygame.transform.scale(pygame.image.load("Image\FIRE2.png"), (300, 100))
 FIRE3 = pygame.transform.scale(pygame.image.load("Image\FIRE3.png"), (300, 100))
 FIRE4 = pygame.transform.scale(pygame.image.load("Image\FIRE4.png"), (300, 100))
-FIRELIST = [FIRE1,FIRE2,FIRE3,FIRE4]
+FIRELIST = [FIRE1,FIRE2,FIRE3,FIRE4] # List of frame
 
 #radness
 text = font1.render("HELL YEAH",False,"Red")
 riff = pygame.mixer.Sound("Audio\SICK_ASS_RIFF.mp3").play
 
+
 #rest
 GRAVITY = [0,1] #gravity in (x,y)
 FLIPPER_LENGTH = 100
-#           screen, color, size, bounce, points, position[[][]], velocity[]
-LINE1= Line(screen, (0,0,0), 50, 1, 1, [[0,650],[250,800]], [0,0])
-LINE2= Line(screen, (0,0,0), 50, 1, 1, [[550,800],[800,650]], [0,0])
-LINE3= Line(screen, (0,0,0), 50, 1, 1, [[0,700],[800,700]], [0,0])
-LINE_LIST = ["here is flipper_L", "here is flipper_R", LINE1, LINE2, LINE3] #ersten zwei eintägen werden jeden Loop überarbeitet
-
 
 
 #End CONSTANTS

@@ -2,11 +2,9 @@ import pygame
 import math
 import numpy as np
 
+from constants import *
 import variables
-
-#tripple copy
-WINDOW_X = 800
-WINDOW_Y = 900
+from functions import *
 
 class Ball:
     def __init__(self, screen, skin, loss, radius, position, velocity, gravity):
@@ -63,7 +61,7 @@ class Ball:
         if self._position[1] - self._radius < 0 or self._position[1] + self._radius > WINDOW_Y:
             self._velocity[1] *= -1
             self._position[1] += 5 *(self._velocity[1]/abs(self._velocity[1]))  #bugfix to make some space between collision
-            score = score + obj._points
+            variables.score = variables.score + obj._points
     def draw(self):  #visualization
         self._screen.blit(self._skin,(self._position[0] - self._skin.get_width() // 2, self._position[1] - self._skin.get_height() // 2))    
         pygame.draw.circle(self._screen, (255, 255, 255), [self._position[0],self._position[1]] , self._radius,5)
@@ -90,3 +88,8 @@ class Line:
         pygame.draw.line(self._screen, (255,255,255), self._position[0], self._position[1], self._size+5) #line in background for outline
         pygame.draw.line(self._screen, self._color, self._position[0], self._position[1], self._size)
 
+#  screen, color, size, bounce, points, position[[][]], velocity[]
+LINE1= Line(screen, (0,0,0), 50, 1, 1, [[0,650],[250,800]], [0,0])
+LINE2= Line(screen, (0,0,0), 50, 1, 1, [[550,800],[800,650]], [0,0])
+LINE3= Line(screen, (0,0,0), 50, 1, 1, [[0,700],[800,700]], [0,0])
+LINE_LIST = ["here is flipper_L", "here is flipper_R", LINE1, LINE2, LINE3] #ersten zwei eintägen werden jeden Loop überarbeitet

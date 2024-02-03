@@ -1,19 +1,31 @@
-#Controlls
-Pfeiltasten links rechts
-Leertaste, Enter
+# Gameplay
+escape                 quit game
+## Start
+arrow left right       move rectangle
+spacebar               to select
 
+## Play
+arrow left right       move flippers 
+spam spacebar          increase ball speed  
+enter                  spawn ball with curent meter
+
+## End
+any key                input name into highscore
+enter                  submit input name
 
 
 # Ideas
 Shop trade highscore vs more balls. better bounce, multiplier and special abilities
-Diffrent Maps
+Diffrent Maps and layout
 Random Events like: 
 Spooky Ball, y und x grav haben sin(x) compoenente addiert für 3 sec ca.
 
-# Font
+
+# Sources 
+## Font
 Online Search for the name
 
-# Audio
+## Audio
 Sound effects:
 https://www.myinstants.com/de/search/?name=goofy
 hell yeah https://www.myinstants.com/de/instant/hell-yeah/
@@ -25,8 +37,7 @@ Copy right free music  https://www.youtube.com/watch?v=DpxZ5PHa6xo
 Song1 https://www.youtube.com/watch?v=jRRvnkP2rM4
 Song2 https://www.youtube.com/watch?v=jRRvnkP2rM4
 
-# Image
+## Image
 Either reverse image search it 
 Or its A.I. generated
-
-Fire gif https://d2w9rnfcy7mm78.cloudfront.net/9987911/original_026fc0b61e323aff95685b0331d518da.gif?1608653922
+Fire extracted frames from gif: https://d2w9rnfcy7mm78.cloudfront.net/9987911/original_026fc0b61e323aff95685b0331d518da.gif?1608653922

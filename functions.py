@@ -1,6 +1,7 @@
 import pygame
 import numpy as np
 
+
 def read_highest_scores(): #reads out top 5 highscores
     output =[]
     scores = {}
@@ -19,4 +20,3 @@ def read_highest_scores(): #reads out top 5 highscores
 
 def selection(input,length):
     return input % length 
-

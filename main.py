@@ -1,72 +1,47 @@
+#import modules
 import pygame
 import sys #to quit properly
 import numpy as np
 
-#Game Basics
-pygame.init()                   # essential
+#Game Init
+pygame.init()                   # essential #needs to happen before constants import
+pygame.mixer.init()             # for sound managment
 pygame.display.set_caption("PinBalling") # window name
 pygame.display.set_icon(pygame.image.load("Image\PINBALLING_LOGO.jpeg")) #window icon
 clock    = pygame.time.Clock()   # essential
-WINDOW_X = 800
-WINDOW_Y = 900
-screen   = pygame.display.set_mode([WINDOW_X, WINDOW_Y]) # essential
 
-#game variables
-
-#get imports
-from functions import *
-from classes import *
+#import files
 from constants import *
-from variables import *
-
-#game variables
-griddy  = True      # enables grid for testing
-running = True      # while loop var.
-
-sound_counter       = 0 # 0 to play music at start
-game_state          = "start" #start play end
-play_stage          = 1 # default set for quick testing
-
-ball_type           = 0 # default set for quick testing # from 0 to 3
-radness_level       = 5 # default set for quick testing # from 0 to 5
-selection_phase     = 0
-current_selected    = 0
-counter             = 0
-ballskin_list       = [BALL1,BALL2,BALL3,BALL4]
-ballskin            = ballskin_list[0]
-
-counter2            = 0 
-max_balls           = 3 #😏
-availible_balls     = max_balls
-ball_list           = []
-left_trigger        = 0
-right_trigger       = 0 
-charge              = 0 # powermeter für Abschussrampe 
-t_old               = 0 # time diff const, at point of ballspawn, for ball not to spawn
+import variables 
+from functions import *
+from classes   import *
 
 #run game
-while running:
+while variables.running:
     #loop based variables
     t = pygame.time.get_ticks() #current time
     keys = pygame.key.get_pressed()  # for holding key pressed, gives input all the time
+
+    #end game
     if keys[pygame.K_ESCAPE]: #kill command
-        running = False
+        variables.running = False
         break
     #---------------------------------------------------------------------------------------------------------------
 
-    #sounds
-    if game_state == "start" and sound_counter == 0:
-        pygame.mixer.Sound('Audio\SONG.mp3').play()
-        sound_counter = 1
-    if game_state == "play" and sound_counter == 1:
-        pygame.mixer.Sound('Audio\SONG.mp3').play()
-        sound_counter = 2 
-    if game_state == "end"  and sound_counter == 2:
-        pygame.mixer.Sound('Audio\SONG_SAD.mp3').play() 
+    #music
+    if variables.game_state == "start" and variables.sound_counter == 0:
+        pygame.mixer.music.load('Audio\SONG.mp3')
+        pygame.mixer.music.play()
+        variables.sound_counter = 1
+    if variables.game_state == "end"  and variables.sound_counter == 1:
+        pygame.mixer.music.stop()
+        pygame.mixer.music.load('Audio\SONG_SAD.mp3')
+        pygame.mixer.music.play()
+        variables.sound_counter = 0
 
 
     #Start
-    if game_state == "start": #select stage , select ball , select METELNESS level     
+    if variables.game_state == "start": #select stage , select ball , select METELNESS level     
         screen.blit(start_background,(0,0))
         #stage select
         screen.blit(stagetext,(150,50))
@@ -82,98 +57,97 @@ while running:
         pygame.draw.rect(screen, (255, 0, 0), (200, 800, 400, 50), 5)
 
         #conditional display
-        if play_stage == 1:
+        if variables.current_stage == 1:
             pygame.draw.rect(screen, (255, 0, 0), (100, 150, 250, 250), 5)
-        if play_stage == 2:
+        if variables.current_stage == 2:
             pygame.draw.rect(screen, (255, 0, 0), (450, 150, 250, 250), 5)
     
-        if ball_type == 0:
+        if variables.ball_type == 0:
             pygame.draw.circle(screen, (255, 0, 0), (100, 600), 85, 5)
-        if ball_type == 1:
+        if variables.ball_type == 1:
             pygame.draw.circle(screen, (255, 0, 0), (300, 600), 85, 5)
-        if ball_type == 2:
+        if variables.ball_type == 2:
             pygame.draw.circle(screen, (255, 0, 0), (500, 600), 85, 5)
-        if ball_type == 3:
+        if variables.ball_type == 3:
             pygame.draw.circle(screen, (255, 0, 0), (700, 600), 85, 5)
 
-        if selection_phase == 2:
+        if variables.selection_phase == 2:
             #FIREWALL2 = pygame.transform.scale(FIREWALL, (radness_level*(400-10)/4, 50-10))
             #screen.blit(FIREWALL2,(200, 800+5)) 
-            pygame.draw.rect(screen, (0, 0, 0), (200+5, 800+5, radness_level*(400-10)/4, 50-10))
-        if radness_level == 5:
+            pygame.draw.rect(screen, (0, 0, 0), (200+5, 800+5, variables.radness_level*(400-10)/4, 50-10))
+        if variables.radness_level == 5:
             screen.blit(radnesswarning,(50,700))
-            if counter2 == 0: # so it makes a sound everytime the treshold is reached
-                counter2 += 1
+            if variables.counter2 == 0: # so it makes a sound everytime the treshold is reached
+                variables.counter2 += 1
                 pygame.mixer.Sound('Audio\SICK_ASS_RIFF.mp3').play() 
         else:
             screen.blit(radnesstext,(150,700))
-            counter2 = 0
+            variables.counter2 = 0
 
 
         #input
         for event in pygame.event.get(): #inputs
             if event.type == pygame.KEYDOWN:
                 if (event.key == pygame.K_SPACE) or (event.key == pygame.K_RETURN) or (event.key == pygame.K_KP_ENTER):
-                    selection_phase += 1
+                    variables.selection_phase += 1
                 elif event.key == pygame.K_LEFT:
-                    current_selected -= 1
+                    variables.current_selected -= 1
                 elif event.key == pygame.K_RIGHT:
-                    current_selected += 1
+                    variables.current_selected += 1
 
         #selection phases
-        if selection_phase == 0: #stage select
-            play_stage = selection(current_selected,2) + 1
-        elif selection_phase == 1: #balls select
-            if counter == 0: #resets selection to 0 once
-                current_selected = 0
-                counter += 1
-            ball_type = selection(current_selected,4)
-            ballskin  = ballskin_list[ball_type]
-        elif selection_phase == 2: #radness select
-            if counter == 1: #resets selection to 0 once
-                current_selected = 0
-                counter += 1 
-            radness_level = selection(current_selected,6)
-        elif selection_phase == 3:
-            game_state ="play"
+        if variables.selection_phase == 0: #stage select
+            variables.current_stage = selection(variables.current_selected,2) + 1
+        elif variables.selection_phase == 1: #balls select
+            if variables.counter == 0: #resets selection to 0 once
+                variables.current_selected = 0
+                variables.counter += 1
+            variables.ball_type = selection(variables.current_selected,4)
+            variables.ballskin  = BALLSKIN_LIST[variables.ball_type]
+        elif variables.selection_phase == 2: #radness select
+            if variables.counter == 1: #resets selection to 0 once
+                variables.current_selected = 0
+                variables.counter += 1 
+            variables.radness_level = selection(variables.current_selected,6)
+        elif variables.selection_phase == 3:
+            variables.game_state ="play"
     #---------------------------------------------------------------------------------------------------------------
 
     #Game
-    if game_state == "play": # main game
-        if left_trigger > -np.pi/4 :
-            left_trigger  -= 0.05
-        if right_trigger > -np.pi/4 :
-            right_trigger -= 0.05
-        if charge > 0:
-            charge -= 1
+    if variables.game_state == "play": # main game
+        if variables.left_flipper> -np.pi/4 :
+            variables.left_flipper -= 0.05
+        if variables.right_flipper > -np.pi/4 :
+            variables.right_flipper -= 0.05
+        if variables.charge > 0:
+            variables.charge -= 1
 
         #inputs
         for event in pygame.event.get(): #inputs
             if event.type == pygame.KEYDOWN:
                 if (event.key == pygame.K_RETURN) or (event.key == pygame.K_KP_ENTER)  : #spawns ball if balls are left
-                    
-                    if (availible_balls > 0) and t> t_old + 120 :    
-                        ball_list.append(Ball(screen,ballskin,1,30,[500,500],[0,-charge/4],GRAVITY))
-                        availible_balls -= 1
-                        t_old=t
-                if (event.key == pygame.K_SPACE):
-                    if charge < 100:
-                        charge += 5
+                    if (variables.availible_balls > 0) and t> variables.t_old + 120 :    
+                        variables.ball_list.append(Ball(screen,variables.ballskin,1,30,[500,500],[0,-variables.charge/4],GRAVITY))
+                        variables.availible_balls -= 1
+                        variables.t_old=t
+                if (event.key == pygame.K_SPACE): #boosts ball inital speed
+                    if variables.charge < 100:
+                        variables.charge += 5
         if keys[pygame.K_LEFT] :
-            if left_trigger < np.pi/4 :
-                left_trigger += 0.5
+            if variables.left_flipper< np.pi/4 :
+                variables.left_flipper+= 0.5
         if keys[pygame.K_RIGHT]:
-            if right_trigger < np.pi/4 :
-                right_trigger += 0.5
+            if variables.right_flipper < np.pi/4 :
+                variables.right_flipper += 0.5
         
         #Flippers
-        LINE_LIST[0] = Line(screen, (255,255,255), 20, 1, 1, [[250,800],[250+FLIPPER_LENGTH*np.cos(-left_trigger) ,800+FLIPPER_LENGTH*np.sin(-left_trigger) ]], [0,0])#left
-        LINE_LIST[1] = Line(screen, (255,255,255), 20, 1, 1, [[550,800],[550-FLIPPER_LENGTH*np.cos(-right_trigger),800+FLIPPER_LENGTH*np.sin(-right_trigger)]], [0,0])#right
+        LINE_LIST[0] = Line(screen, (255,255,255), 20, 1, 1, [[250,800],[250+FLIPPER_LENGTH*np.cos(-variables.left_flipper) ,800+FLIPPER_LENGTH*np.sin(-variables.left_flipper) ]], [0,0])#left
+        LINE_LIST[1] = Line(screen, (255,255,255), 20, 1, 1, [[550,800],[550-FLIPPER_LENGTH*np.cos(-variables.right_flipper),800+FLIPPER_LENGTH*np.sin(-variables.right_flipper)]], [0,0])#right
 
         #background
-        if play_stage == 1:
+        if variables.current_stage == 1:
             screen.blit(stage1_background,(0,0))
-        if play_stage == 2:
+        if variables.current_stage == 2:
             screen.blit(stage2_background,(0,0))
         screen.blit(FIRELIST[(int(t/150))%4],(250,800))
 
@@ -183,40 +157,39 @@ while running:
 
         
         #ball handler
-        for x in range(len(ball_list)):
-            ball_list[x].update_position()
-            for y in range(len(ball_list)):
+        for x in range(len(variables.ball_list)):
+            variables.ball_list[x].update_position()
+            for y in range(len(variables.ball_list)):
                 if y is not x: #dont check collision with self
-                    ball_list[x].collision_ball(ball_list[y])
+                    variables.ball_list[x].collision_ball(variables.ball_list[y])
             for y in range(len(LINE_LIST)): #checks all rec collisions
-                ball_list[x].collision_line(LINE_LIST[y])
+                variables.ball_list[x].collision_line(LINE_LIST[y])
                 
-            ball_list[x].collision_window()
-            ball_list[x].draw()
+            variables.ball_list[x].collision_window()
+            variables.ball_list[x].draw()
 
-            if (ball_list[x]._position[1]>850):
-                ball_list.remove(ball_list[x]) #removes ball privilegs
+            if (variables.ball_list[x]._position[1]>850):
+                variables.ball_list.remove(variables.ball_list[x]) #removes ball privilegs
                 break
 
         #lose condition
-        if (availible_balls==0) and (len(ball_list)==0):
-            game_state = "end"
+        if (variables.availible_balls==0) and (len(variables.ball_list)==0):
+            variables.game_state = "end"
 
         #radness handler
-        #missing content ?
+        
             
         #UI Overlay
-        for x in range(availible_balls): #balls ui
+        for x in range(variables.availible_balls): #balls ui
             screen.blit(pygame.transform.scale(pygame.image.load("Image\LifeSkull.png"), (70, 70)),(25,800-x*70))
         screen.blit(font3.render(f"{(variables.score)}",False,"Red"),(45,45))
         pygame.draw.rect(screen, (0, 0, 0),   (700-5, 875-(2*100)-5, 50+10, 400+10), 5) #chargemeter background
-        pygame.draw.rect(screen, (255, 0, 0), (700, 875-(2*charge), 50, 4*(charge))) #chargemeter
+        pygame.draw.rect(screen, (255, 0, 0), (700, 875-(2*variables.charge), 50, 4*variables.charge)) #chargemeter
 
-        
         #---------------------------------------------------------------------------------------------------------------
        
     #End
-    if game_state == "end": #shows endscreen and manages highscores over games
+    if variables.game_state == "end": #shows endscreen and manages highscores over games
         
         #End Display
         gameover_txt = font3.render("Final Score: "+ str(variables.score),False,"Red")
@@ -237,7 +210,7 @@ while running:
         if error_event_counter == 4:
             screen.blit(record_error_txt,(150,250))
 
-
+        
         #input for name into highscore list
         for event in pygame.event.get(): # for pressing key once
             if event.type == pygame.KEYDOWN:
@@ -259,7 +232,7 @@ while running:
                             file.write(input_string + " " + str(variables.score) + '\n')
                     else:
                          error_event_counter = 4
-                         if radness_level == 5:  pygame.mixer.Sound('Audio\SICK_ASS_RIFF.mp3').play()  
+                         if variables.radness_level == 5:  pygame.mixer.Sound('Audio\SICK_ASS_RIFF.mp3').play()  
                 else:
                     if (record_counter == 0): #can only change if not submitted already
                         input_string += event.unicode  
@@ -273,7 +246,7 @@ while running:
     #---------------------------------------------------------------------------------------------------------------
     
     #Gridview
-    if griddy == True: #Grid Display 
+    if variables.griddy == True: #Grid Display 
         for y in range (50,WINDOW_Y+50,50):
             for x in range (50,WINDOW_X+50,50):
                 screen.blit(font4.render(f"{(y)}",False,"Red"),(0,y))
