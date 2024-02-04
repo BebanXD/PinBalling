@@ -22,14 +22,14 @@ while variables.running:
     t = pygame.time.get_ticks() #current time
     keys = pygame.key.get_pressed()  # for holding key pressed, gives input all the time
 
-    #end game
+    #close game
     if keys[pygame.K_ESCAPE]: #kill command
         variables.running = False
         break
     #---------------------------------------------------------------------------------------------------------------
 
     #music
-    if variables.game_state == "start" and variables.sound_counter == 0:
+    if variables.game_state ==("play" or "start")and variables.sound_counter == 0:
         pygame.mixer.music.load('Audio\SONG.mp3')
         pygame.mixer.music.play()
         variables.sound_counter = 1
@@ -38,8 +38,8 @@ while variables.running:
         pygame.mixer.music.load('Audio\SONG_SAD.mp3')
         pygame.mixer.music.play()
         variables.sound_counter = 0
-
-
+    #---------------------------------------------------------------------------------------------------------------    
+    
     #Start
     if variables.game_state == "start": #select stage , select ball , select METELNESS level     
         screen.blit(start_background,(0,0))
@@ -126,13 +126,13 @@ while variables.running:
         for event in pygame.event.get(): #inputs
             if event.type == pygame.KEYDOWN:
                 if (event.key == pygame.K_RETURN) or (event.key == pygame.K_KP_ENTER)  : #spawns ball if balls are left
-                    if (variables.availible_balls > 0) and t> variables.t_old + 120 :    
+                    if (variables.availible_balls > 0) and t > variables.t_old + 120 :    
                         variables.ball_list.append(Ball(screen,variables.ballskin,1,30,[500,500],[0,-variables.charge/4],GRAVITY))
                         variables.availible_balls -= 1
                         variables.t_old=t
                 if (event.key == pygame.K_SPACE): #boosts ball inital speed
                     if variables.charge < 100:
-                        variables.charge += 5
+                        variables.charge += 10
         if keys[pygame.K_LEFT] :
             if variables.left_flipper< np.pi/4 :
                 variables.left_flipper+= 0.5
@@ -176,9 +176,6 @@ while variables.running:
         if (variables.availible_balls==0) and (len(variables.ball_list)==0):
             variables.game_state = "end"
 
-        #radness handler
-        
-            
         #UI Overlay
         for x in range(variables.availible_balls): #balls ui
             screen.blit(pygame.transform.scale(pygame.image.load("Image\LifeSkull.png"), (70, 70)),(25,800-x*70))
@@ -186,6 +183,35 @@ while variables.running:
         pygame.draw.rect(screen, (0, 0, 0),   (700-5, 875-(2*100)-5, 50+10, 400+10), 5) #chargemeter background
         pygame.draw.rect(screen, (255, 0, 0), (700, 875-(2*variables.charge), 50, 4*variables.charge)) #chargemeter
 
+        #radness handler
+        if variables.radness_level > 0:
+            if variables.radness_level:
+                #text
+                if probability_per_second(variables.radness_level**2):
+                    x = t%len(TEXTLIST)
+                    variables.rad_txt_list.append(Rad_txt(font3.render(TEXTLIST[x],False,"Red"),[-300,(np.random.rand()*WINDOW_Y)],[2+np.random.rand()*10,0],np.random.rand()*100))
+                #image
+                if probability_per_second(variables.radness_level**2):
+                    x = t%len(IMAGELIST)
+                    variables.rad_pic_list.append(Rad_pic(pygame.image.load(IMAGELIST[x]),[np.random.rand()*WINDOW_X,np.random.rand()*WINDOW_X],[50,50],0.1,t+(2+np.random.rand()*5)*600))
+                #sound
+                if probability_per_second(variables.radness_level**2):
+                    x = t%len(SOUNDLIST)
+                    pygame.mixer.Sound(SOUNDLIST[x]).play()
+
+        for x in range(len(variables.rad_pic_list)):
+            variables.rad_pic_list[x].transform
+            variables.rad_pic_list[x].draw()
+            if t > variables.rad_pic_list[x]._growthtime : #removes after out of screen to safe memory
+                variables.rad_pic_list.remove(variables.rad_pic_list[x])
+                break
+           
+        for x in range(len(variables.rad_txt_list)):
+            variables.rad_txt_list[x].draw()
+            variables.rad_txt_list[x].update_position()
+            if variables.rad_txt_list[x]._position[0] > WINDOW_X: #removes after out of screen to safe memory
+                variables.rad_txt_list.remove(variables.rad_txt_list[x])
+                break
         #---------------------------------------------------------------------------------------------------------------
        
     #End
@@ -193,7 +219,7 @@ while variables.running:
         
         #End Display
         gameover_txt = font3.render("Final Score: "+ str(variables.score),False,"Red")
-        input_txt    = font3.render(input_string,False,"White")
+        input_txt    = font3.render(variables.input_string,False,"White")
 
         #your score and input
         screen.blit(gameoverscreen, (0,0))
@@ -201,41 +227,41 @@ while variables.running:
         screen.blit(record_txt,     (150,100))
         screen.blit(input_txt,      (150,150))
         screen.blit(highscore_txt,      (150,400))
-        if error_event_counter == 1:
+        if variables.error_event_counter == 1:
             screen.blit(short_error_txt,(150,250))
-        if error_event_counter == 2:
+        if variables.error_event_counter == 2:
             screen.blit(long_error_txt,(150,250))
-        if error_event_counter == 3:
+        if variables.error_event_counter == 3:
             screen.blit(submitted_txt,(150,250))
-        if error_event_counter == 4:
+        if variables.error_event_counter == 4:
             screen.blit(record_error_txt,(150,250))
 
         
         #input for name into highscore list
         for event in pygame.event.get(): # for pressing key once
             if event.type == pygame.KEYDOWN:
-                if (event.key == pygame.K_BACKSPACE) and (record_counter == 0):  #can only change if not submitted already
-                    input_string = input_string[:-1]
+                if (event.key == pygame.K_BACKSPACE) and (variables.record_counter == 0):  #can only change if not submitted already
+                    variables.input_string = variables.input_string[:-1]
                 elif event.key == pygame.K_SPACE:
                     print() #does nothing #so no space is messing up the highscore function
                 elif (event.key == pygame.K_KP_ENTER) or (event.key == pygame.K_RETURN):
-                    if (len(input_string) == 0) :
-                        error_event_counter = 1
+                    if (len(variables.input_string) == 0) :
+                        variables.error_event_counter = 1
                         break
-                    if (len(input_string) > 15) :
-                        error_event_counter = 2
+                    if (len(variables.input_string) > 15) :
+                        variables.error_event_counter = 2
                         break
-                    elif record_counter == 0:
-                        record_counter = 1
-                        error_event_counter = 3 #eigentlich kein error aber egal
+                    elif variables.record_counter == 0:
+                        variables.record_counter = 1
+                        variables.error_event_counter = 3 #eigentlich kein error aber egal
                         with open("Highscores.txt", "a") as file:
-                            file.write(input_string + " " + str(variables.score) + '\n')
+                            file.write(variables.input_string + " " + str(variables.score) + '\n')
                     else:
-                         error_event_counter = 4
+                         variables.error_event_counter = 4
                          if variables.radness_level == 5:  pygame.mixer.Sound('Audio\SICK_ASS_RIFF.mp3').play()  
                 else:
-                    if (record_counter == 0): #can only change if not submitted already
-                        input_string += event.unicode  
+                    if (variables.record_counter == 0): #can only change if not submitted already
+                        variables.input_string += event.unicode  
 
         # top 5 highscores
         for x in range(len(read_highest_scores())):
@@ -258,7 +284,7 @@ while variables.running:
     # Clocktick
     pygame.display.flip() #is needed somehow,dont know what it does
     pygame.display.update()
-    clock.tick(60) # 60 frames per second 
+    clock.tick(FPS) # 60 frames per second 
 
 # Quit Pygame properly
 pygame.quit()

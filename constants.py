@@ -4,6 +4,7 @@ import numpy as np
 WINDOW_X = 800
 WINDOW_Y = 900
 screen   = pygame.display.set_mode([WINDOW_X, WINDOW_Y]) # essential
+FPS      = 60 # frames per sec
 
 #fonts
 font1    = pygame.font.Font("Misc\WhoAsksSatan.ttf",50)
@@ -39,9 +40,9 @@ FIRE4 = pygame.transform.scale(pygame.image.load("Image\FIRE4.png"), (300, 100))
 FIRELIST = [FIRE1,FIRE2,FIRE3,FIRE4] # List of frame
 
 #radness
-text = font1.render("HELL YEAH",False,"Red")
-riff = pygame.mixer.Sound("Audio\SICK_ASS_RIFF.mp3").play
-
+SOUNDLIST    = ["Audio/EAGLE_SCREACH.mp3","Audio\HELL_YEAH.mp3","Audio\RAAAAH.mp3","Audio\SICK_ASS_RIFF.mp3"]
+IMAGELIST    = ["Image\RANDOM_1.jpg","Image\RANDOM_2.webp"]
+TEXTLIST     = ["HELL YEAH","ROCK AND ROLL!"]
 
 #rest
 GRAVITY = [0,1] #gravity in (x,y)
@@ -58,7 +59,3 @@ record_error_txt = font2.render ("SCORE ALREADY SUBMITTED:",False,"Red")
 short_error_txt  = font2.render ("NAME TO SHORT!",False,"Red")
 long_error_txt   = font2.render ("NAME TO LONG!",False,"Red")
 submitted_txt    = font2.render ("SCORE SUBMITTED:",False,"Red")
-
-input_string        = ""
-error_event_counter = 0
-record_counter      = 0

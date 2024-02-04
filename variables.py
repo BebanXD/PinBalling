@@ -3,7 +3,7 @@ from constants import *
 #overarching variables
 running             = True      # while loop var.
 griddy              = True   # enables grid for testing
-game_state          = "start" #"start" or "play" or "end"
+game_state          = "play" #"start" or "play" or "end"
 current_stage       = 1 # default set for quick testing
 score               = 0 # tracks score #needed before classes are created
 sound_counter       = 0 # 0 to play music at start
@@ -27,5 +27,13 @@ right_flipper       = 0             # position right flipper
 charge              = 0             # powermeter für Abschussrampe 
 t_old               = 0             # time diff const, at point of ballspawn, for ball not to spawn
 
+#radness variable
+rad_txt_list        = []
+rad_pic_list        = []
+
+
 #end
+input_string        = ""
+error_event_counter = 0
+record_counter      = 0
 

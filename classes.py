@@ -88,6 +88,38 @@ class Line:
         pygame.draw.line(self._screen, (255,255,255), self._position[0], self._position[1], self._size+5) #line in background for outline
         pygame.draw.line(self._screen, self._color, self._position[0], self._position[1], self._size)
 
+class Rad_pic:
+    def __init__(self, image, position,size, growth, growthtime):
+        self._image= image
+        self._position = position
+        self._growth = growth
+        self._growthtime = growthtime
+        self._size = size
+        self._image = pygame.transform.scale(self._image,(size[0],size[1]))
+    def transform(self):
+        self._position[0] = self._position[0]-self._growth*self._size[0]
+        self._position[1] = self._position[1]-self._growth*self._size[1]
+        self._size[0] =self._size[0] + self._growth*self._size[0]
+        self._size[1] =self._size[1] + self._growth*self._size[1]
+        self._image = pygame.transform.scale(self._image,(self._size[0], self._size[1]))
+    def draw(self):
+        screen.blit(self._image,(self._position[0],self._position[1]))
+
+class Rad_txt:
+    def __init__(self, text, position, velocity, shakyness):
+        self._text = text
+        self._position = position
+        self._velocity = velocity
+        self._shakyness = shakyness
+    def update_position(self):
+        self._position[0] += self._velocity[0]
+        self._velocity[1] += self._velocity[1]
+        self._position[1] += np.sin(self._velocity[1])* self._shakyness
+    def draw(self):
+        screen.blit(self._text, (self._position[0],self._position[1]))
+    
+
+
 #  screen, color, size, bounce, points, position[[][]], velocity[]
 LINE1= Line(screen, (0,0,0), 50, 1, 1, [[0,650],[250,800]], [0,0])
 LINE2= Line(screen, (0,0,0), 50, 1, 1, [[550,800],[800,650]], [0,0])

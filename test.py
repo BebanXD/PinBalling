@@ -4,21 +4,21 @@ import sys
 # Initialize Pygame
 pygame.init()
 
-# Set up display
+# Set up the display
 width, height = 400, 400
 screen = pygame.display.set_mode((width, height))
-pygame.display.set_caption("Tall Rectangle")
+pygame.display.set_caption("Growing Picture")
 
-# Set up colors
-black = (0, 0, 0)
-white = (255, 255, 255)
+# Load the image
+image_path = "Image\RANDOM_1.jpg"  # Replace with the actual path to your image
+original_image = pygame.image.load(image_path)
+image_rect = original_image.get_rect()
 
-# Set up rectangle
-rect_width, rect_height = 50, 50
-rect_x = (width - rect_width) // 2
-rect_y = height - rect_height
+# Initial scale and position
+scale_factor = 1.0
+x, y = (width - image_rect.width) // 2, (height - image_rect.height) // 2
 
-# Set up clock
+# Set up clock for controlling the frame rate
 clock = pygame.time.Clock()
 
 # Main game loop
@@ -28,17 +28,28 @@ while True:
             pygame.quit()
             sys.exit()
 
-    # Update rectangle height
-    rect_height += 1
+    # Increase the scale factor gradually
+    scale_factor += 0.01
+
+    # Resize the image
+    scaled_image = pygame.transform.scale(original_image, (int(image_rect.width * scale_factor),
+                                                            int(image_rect.height * scale_factor)))
+
+    # Update the position
+    x = (width - scaled_image.get_width()) // 2
+    y = (height - scaled_image.get_height()) // 2
 
     # Clear the screen
-    screen.fill(black)
+    screen.fill((255, 255, 255))
 
-    # Draw rectangle
-    pygame.draw.rect(screen, white, (rect_x, rect_y, rect_width, rect_height))
+    # Draw the scaled image on the screen
+    screen.blit(scaled_image, (x, y))
 
-    # Update display
+    # Update the display
     pygame.display.flip()
 
-    # Set frames per second
+    # Control the frame rate
     clock.tick(30)
+
+# Quit Pygame (this will never be reached in this infinite loop)
+pygame.quit()
