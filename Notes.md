@@ -14,8 +14,9 @@ any key                input name into highscore
 enter                  submit input name
 
 
-# Ideas
+# Ideas              scrapped due to time constraints 😥
 Shop trade highscore vs more balls. better bounce, multiplier and special abilities
+More Meter maybe more bounce to have more control over the ball
 Diffrent Maps and layout
 Random Events like: 
 Spooky Ball, y und x grav haben sin(x) compoenente addiert für 3 sec ca.

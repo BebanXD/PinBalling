@@ -16,42 +16,47 @@ class Ball:
         self._velocity = velocity
         self._gravity = gravity
         self._counter = 0
-    # access data
-    def get_position(self):
-        return self._position
-    def get_velocity(self):
-        return self._velocity
     def update_position(self):
         self._velocity[0] += self._gravity[0]
         self._velocity[1] += self._gravity[1]
         self._position[0] += self._velocity[0]
         self._position[1] += self._velocity[1]
-
     @staticmethod
     def change_score(Wert):
         variables.score = variables.score + Wert
-
-    def collision_ball(self, ball): #vllt noch zu primitiv vllt noch geschw. berücksichtigen ect.
-        distance = ((self._position[0] - ball.get_position()[0]) ** 2 + (self._position[1] - ball.get_position()[1]) ** 2) ** 0.5
-        if distance <= self._radius + ball._radius:
-            self._velocity[0] *= -1
-            self._velocity[1] *= -1
-            self.change_score(1)
-
     @staticmethod 
-    def collision_checker(Ball_point, radius, Start_point, End_point, thickness):
+    def collision_checker(Ball_point, radius, Start_point, End_point, thickness): #only used for Line element collsision
         zähler = abs((End_point[0] - Start_point[0]) * (Start_point[1] - Ball_point[1]) + (Start_point[1] - End_point[1]) * (Start_point[0] - Ball_point[0]))
         nenner = math.sqrt((End_point[0] - Start_point[0])**2 + (End_point[1] - Start_point[1])**2)
         distance = zähler / nenner
         return distance <= (thickness/2 + radius) #maybe durch 2 für thickness machen idk
+    @staticmethod
+    def angle_between_points(point1, point2): # funktion mies ugly geht auch sicher leichter # winkel aus polarkoordinaten realtiv zu x achse
+        x1, y1 = point1
+        x2, y2 = point2
+        angle = math.atan2(y2 - y1, x2 - x1)
+        if angle < 0:
+            angle= 2*np.pi -abs(angle) 
+        return angle
+
+    def collision_ball(self, ball): #vllt noch zu primitiv vllt noch geschw. berücksichtigen ect.
+        distance = ((self._position[0] - ball._position[0]) ** 2 + (self._position[1] - ball._position[1]) ** 2) ** 0.5
+        if distance <= self._radius + ball._radius:
+            angle = self.angle_between_points(self._position, ball._position)
+            print(angle)
+            self._velocity[0] = self._velocity[0] * (np.cos (angle))  *0.9 #0,9 energylos per collision 
+            self._velocity[1] = self._velocity[1] * (np.sin (angle))  *0.9
+            self.change_score(1)
 
     def collision_line(self, obj):
         if self.collision_checker(self._position, self._radius, obj._position[0], obj._position[1], obj._size):
-            self._velocity[0] = -(self._velocity[0] + obj._velocity[0]) * obj._bounce
-            self._velocity[1] = -(self._velocity[1] + obj._velocity[1]) * obj._bounce
+            angle = self.angle_between_points(self._position, obj._position[0])
+            print(angle, "line col")
+            self._velocity[0] = (self._velocity[0] * (np.cos (angle))  + obj._velocity[0]) * obj._bounce 
+            self._velocity[1] = (self._velocity[1] * (np.sin (angle))  + obj._velocity[0]) * obj._bounce
             if not (self._velocity[0] == 0  or self._velocity[1] ==0): #quick division 0 fix
-                self._position[0] += 5 *(self._velocity[0]/abs(self._velocity[0]))  #bugfix to make some space between collision
-                self._position[1] += 5 *(self._velocity[1]/abs(self._velocity[1]))  #bugfix to make some space between collision
+                self._position[0] += 5 * (np.cos (angle)) 
+                self._position[1] += 5 * (np.sin (angle))
             self.change_score(obj._points)
 
     def collision_window(self):  #needs to be last for ball to stay inside of window   #alternativ auch mit geschw. vektor richtung bestimmen und zukünfitge kollision prüfen #vllt besser für stationäre Grenzen
@@ -61,7 +66,7 @@ class Ball:
         if self._position[1] - self._radius < 0 or self._position[1] + self._radius > WINDOW_Y:
             self._velocity[1] *= -1
             self._position[1] += 5 *(self._velocity[1]/abs(self._velocity[1]))  #bugfix to make some space between collision
-            variables.score = variables.score + obj._points
+            self.change_score(1)
     def draw(self):  #visualization
         self._screen.blit(self._skin,(self._position[0] - self._skin.get_width() // 2, self._position[1] - self._skin.get_height() // 2))    
         pygame.draw.circle(self._screen, (255, 255, 255), [self._position[0],self._position[1]] , self._radius,5)
@@ -75,10 +80,6 @@ class Line:
         self._points = points
         self._position = position
         self._velocity = velocity
-    def get_position(self): 
-        return self._position
-    def get_velocity(self):
-        return self._velocity
     def update_position(self):
         self._position[0][0] += self._velocity[0]
         self._position[1][0] += self._velocity[0]

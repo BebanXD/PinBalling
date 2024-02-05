@@ -48,7 +48,6 @@ TEXTLIST     = ["HELL YEAH","ROCK AND ROLL!"]
 GRAVITY = [0,1] #gravity in (x,y)
 FLIPPER_LENGTH = 100
 
-
 #End CONSTANTS
 gameoverscreen = pygame.transform.scale(pygame.image.load("Image\END_SCREEN.webp").convert(), (WINDOW_X, WINDOW_Y))
 

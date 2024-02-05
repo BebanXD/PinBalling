@@ -12,6 +12,10 @@ def read_highest_scores(): #gives top highscore list
             name, score = line.strip().rsplit(' ', 1)
             scores[name] = int(score)
     sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
+    if len(sorted_scores)<5:
+        for name, score in sorted_scores:
+            output.append([name,score])
+        return output
     for name, score in sorted_scores[:5]:
         output.append([name,score])
     return output

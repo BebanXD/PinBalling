@@ -127,7 +127,7 @@ while variables.running:
             if event.type == pygame.KEYDOWN:
                 if (event.key == pygame.K_RETURN) or (event.key == pygame.K_KP_ENTER)  : #spawns ball if balls are left
                     if (variables.availible_balls > 0) and t > variables.t_old + 120 :    
-                        variables.ball_list.append(Ball(screen,variables.ballskin,1,30,[500,500],[0,-variables.charge/4],GRAVITY))
+                        variables.ball_list.append(Ball(screen,variables.ballskin,1,30,[WINDOW_X/2,WINDOW_X/2],[variables.charge/4,0],GRAVITY))
                         variables.availible_balls -= 1
                         variables.t_old=t
                 if (event.key == pygame.K_SPACE): #boosts ball inital speed
@@ -159,10 +159,10 @@ while variables.running:
         #ball handler
         for x in range(len(variables.ball_list)):
             variables.ball_list[x].update_position()
-            for y in range(len(variables.ball_list)):
+            for y in range(len(variables.ball_list)): #collision with other balls
                 if y is not x: #dont check collision with self
                     variables.ball_list[x].collision_ball(variables.ball_list[y])
-            for y in range(len(LINE_LIST)): #checks all rec collisions
+            for y in range(len(LINE_LIST)): #checks all Line collisions
                 variables.ball_list[x].collision_line(LINE_LIST[y])
                 
             variables.ball_list[x].collision_window()
@@ -171,17 +171,13 @@ while variables.running:
             if (variables.ball_list[x]._position[1]>850):
                 variables.ball_list.remove(variables.ball_list[x]) #removes ball privilegs
                 break
+        if variables.score > variables.extra_balls_counter #gives extra ball for every
+            variables.extra_balls_counter = 2 * variables.extra_balls_counter
+            variables.availible_balls += 1
 
         #lose condition
         if (variables.availible_balls==0) and (len(variables.ball_list)==0):
             variables.game_state = "end"
-
-        #UI Overlay
-        for x in range(variables.availible_balls): #balls ui
-            screen.blit(pygame.transform.scale(pygame.image.load("Image\LifeSkull.png"), (70, 70)),(25,800-x*70))
-        screen.blit(font3.render(f"{(variables.score)}",False,"Red"),(45,45))
-        pygame.draw.rect(screen, (0, 0, 0),   (700-5, 875-(2*100)-5, 50+10, 400+10), 5) #chargemeter background
-        pygame.draw.rect(screen, (255, 0, 0), (700, 875-(2*variables.charge), 50, 4*variables.charge)) #chargemeter
 
         #radness handler
         if variables.radness_level > 0:
@@ -212,6 +208,14 @@ while variables.running:
             if variables.rad_txt_list[x]._position[0] > WINDOW_X: #removes after out of screen to safe memory
                 variables.rad_txt_list.remove(variables.rad_txt_list[x])
                 break
+
+        #UI Overlay
+        for x in range(variables.availible_balls): #balls ui
+            screen.blit(pygame.transform.scale(pygame.image.load("Image\LifeSkull.png"), (70, 70)),(25,800-x*70))
+        screen.blit(font3.render(f"{(variables.score)}",False,"Red"),(45,45))
+        pygame.draw.rect(screen, (255, 255, 255), (715-10, 875-(2*100)-10          , 50+(10)*2 ,200+(10)*2), 5) #chargemeter background 2
+        pygame.draw.rect(screen, (0, 0, 0),   (715-5 , 875-(2*100)-5           , 50+(5)*2  ,200+(5)*2) , 5) #chargemeter background
+        pygame.draw.rect(screen, (255, 0, 0), (715   , 875-(2*variables.charge), 50    ,2*variables.charge)) #chargemeter
         #---------------------------------------------------------------------------------------------------------------
        
     #End
