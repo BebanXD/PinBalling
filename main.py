@@ -158,6 +158,7 @@ while variables.running:
         
         #ball handler
         for x in range(len(variables.ball_list)):
+            variables.ball_list[x].gravity_update()
             variables.ball_list[x].update_position()
             variables.velxi = variables.ball_list[x]._velocity[0]
             variables.velyi = variables.ball_list[x]._velocity[0]
@@ -166,17 +167,20 @@ while variables.running:
                 if variables.collision_counter == 0:
                     if y is not x: #dont check collision with self
                         variables.ball_list[x].collision_ball(variables.ball_list[y])
+                        variables.ball_list[x].update_position()
                     if not (variables.ball_list[x]._velocity[0] == variables.velxi or variables.ball_list[x]._velocity[1] == variables.velyi):
                         variables.collision_counter = 1
                 
             for y in range(len(LINE_LIST)): #checks all Line collisions
                 if variables.collision_counter == 0:
                     variables.ball_list[x].collision_line(LINE_LIST[y])
+                    variables.ball_list[x].update_position()
                     if not (variables.ball_list[x]._velocity[0] == variables.velxi or variables.ball_list[x]._velocity[1] == variables.velyi):
                             variables.collision_counter = 1
             
             if variables.collision_counter == 0: #collision window 
                 variables.ball_list[x].collision_window()
+                variables.ball_list[x].update_position()
                 if not (variables.ball_list[x]._velocity[0] == variables.velxi or variables.ball_list[x]._velocity[1] == variables.velyi):
                             variables.collision_counter = 1
             

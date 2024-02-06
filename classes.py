@@ -18,14 +18,16 @@ class Ball:
         self._counter = 0
 
     def update_position(self): #update position due to speed, #update speed due to grav, # upda
-        self._velocity[0] += self._gravity[0]
-        self._velocity[1] += self._gravity[1]
         self._position[0] += self._velocity[0]
         self._position[1] += self._velocity[1]
         if self._velocity[0] > variables.max_x:
              self._velocity[0] = variables.max_x
         if self._velocity[1] > variables.max_y:
             self._velocity[1] = variables.max_y
+
+    def gravity_update(self):
+        self._velocity[0] += self._gravity[0]
+        self._velocity[1] += self._gravity[1]
 
     @staticmethod
     def change_score(Wert):
@@ -43,7 +45,7 @@ class Ball:
         line_unit_vector   = pygame.math.Vector2(line_vector)/ line_length #fix here maybe
         line_normal_vector = pygame.math.Vector2(-line_unit_vector[1], line_unit_vector[0])
         velocity_vector    = pygame.math.Vector2(self._velocity[0],self._velocity[1])
-        incident_angle = (velocity_vector.angle_to(line_normal_vector) +90)* (np.pi/180)
+        incident_angle     = (velocity_vector.angle_to(line_normal_vector))* (np.pi/180)
         print(incident_angle)
         return incident_angle
 
@@ -51,8 +53,8 @@ class Ball:
         if self.collision_checker(self._position, self._radius, line._position[0], line._position[1], line._size):
             angle = self.angle_between_line(line) 
             v_betrag = np.sqrt(self._velocity[0]**2 + self._velocity[1]**2)
-            self._velocity[0] = (v_betrag * (np.cos (angle))  + line._velocity[0]) * line._bounce 
-            self._velocity[1] = (v_betrag * (np.sin (angle))  + line._velocity[1]) * line._bounce
+            self._velocity[0] = (v_betrag * ( np.cos (angle))  + line._velocity[0]) * line._bounce 
+            self._velocity[1] = (v_betrag * (-np.sin (angle))  + line._velocity[1]) * line._bounce
             self.change_score(line._points)
 
     def collision_ball(self, ball): #vllt noch zu primitiv vllt noch geschw. berücksichtigen ect.
