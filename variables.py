@@ -19,7 +19,7 @@ BALLSKIN_LIST       = [BALL1,BALL2,BALL3,BALL4]  # List of skins
 ballskin            = BALLSKIN_LIST[0]    # keeps track of current balls in game
 
 #play
-max_balls           = 10            # max amounts of balls #normal 3
+max_balls           = 5            # max amounts of balls #normal 3
 availible_balls     = max_balls     # keeps track of still availible balls
 extra_balls_counter = 1000          # 
 ball_list           = []            # keeps track of current balls in game
@@ -27,6 +27,11 @@ left_flipper        = 0             # position left flipper
 right_flipper       = 0             # position right flipper
 charge              = 0             # powermeter für Abschussrampe 
 t_old               = 0             # time diff const, at point of ballspawn, for ball not to spawn
+collsion_counter    = 0
+velxi = 0
+velyi = 0
+max_x = 15 #eig const
+max_y = 15
 
 #radness variable
 rad_txt_list        = []

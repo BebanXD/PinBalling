@@ -16,11 +16,17 @@ class Ball:
         self._velocity = velocity
         self._gravity = gravity
         self._counter = 0
-    def update_position(self):
+
+    def update_position(self): #update position due to speed, #update speed due to grav, # upda
         self._velocity[0] += self._gravity[0]
         self._velocity[1] += self._gravity[1]
         self._position[0] += self._velocity[0]
         self._position[1] += self._velocity[1]
+        if self._velocity[0] > variables.max_x:
+             self._velocity[0] = variables.max_x
+        if self._velocity[1] > variables.max_y:
+            self._velocity[1] = variables.max_y
+
     @staticmethod
     def change_score(Wert):
         variables.score = variables.score + Wert
@@ -30,34 +36,32 @@ class Ball:
         nenner = math.sqrt((End_point[0] - Start_point[0])**2 + (End_point[1] - Start_point[1])**2)
         distance = zähler / nenner
         return distance <= (thickness/2 + radius) #maybe durch 2 für thickness machen idk
-    @staticmethod
-    def angle_between_points(point1, point2): # funktion mies ugly geht auch sicher leichter # winkel aus polarkoordinaten realtiv zu x achse
-        x1, y1 = point1
-        x2, y2 = point2
-        angle = math.atan2(y2 - y1, x2 - x1)
-        if angle < 0:
-            angle= 2*np.pi -abs(angle) 
-        return angle
+    
+    def angle_between_line(self, line):
+        line_vector        = pygame.math.Vector2(line._position[0][0]-line._position[1][0] , line._position[0][1] -line._position[1][1])
+        line_length        = math.sqrt(line_vector[0] ** 2 + line_vector[1] ** 2) 
+        line_unit_vector   = pygame.math.Vector2(line_vector)/ line_length #fix here maybe
+        line_normal_vector = pygame.math.Vector2(-line_unit_vector[1], line_unit_vector[0])
+        velocity_vector    = pygame.math.Vector2(self._velocity[0],self._velocity[1])
+        incident_angle = (velocity_vector.angle_to(line_normal_vector) +90)* (np.pi/180)
+        print(incident_angle)
+        return incident_angle
+
+    def collision_line(self, line):
+        if self.collision_checker(self._position, self._radius, line._position[0], line._position[1], line._size):
+            angle = self.angle_between_line(line) 
+            v_betrag = np.sqrt(self._velocity[0]**2 + self._velocity[1]**2)
+            self._velocity[0] = (v_betrag * (np.cos (angle))  + line._velocity[0]) * line._bounce 
+            self._velocity[1] = (v_betrag * (np.sin (angle))  + line._velocity[1]) * line._bounce
+            self.change_score(line._points)
 
     def collision_ball(self, ball): #vllt noch zu primitiv vllt noch geschw. berücksichtigen ect.
         distance = ((self._position[0] - ball._position[0]) ** 2 + (self._position[1] - ball._position[1]) ** 2) ** 0.5
         if distance <= self._radius + ball._radius:
-            angle = self.angle_between_points(self._position, ball._position)
-            print(angle)
+            angle = 1 #change this its wrong
             self._velocity[0] = self._velocity[0] * (np.cos (angle))  *0.9 #0,9 energylos per collision 
             self._velocity[1] = self._velocity[1] * (np.sin (angle))  *0.9
             self.change_score(1)
-
-    def collision_line(self, obj):
-        if self.collision_checker(self._position, self._radius, obj._position[0], obj._position[1], obj._size):
-            angle = self.angle_between_points(self._position, obj._position[0])
-            print(angle, "line col")
-            self._velocity[0] = (self._velocity[0] * (np.cos (angle))  + obj._velocity[0]) * obj._bounce 
-            self._velocity[1] = (self._velocity[1] * (np.sin (angle))  + obj._velocity[0]) * obj._bounce
-            if not (self._velocity[0] == 0  or self._velocity[1] ==0): #quick division 0 fix
-                self._position[0] += 5 * (np.cos (angle)) 
-                self._position[1] += 5 * (np.sin (angle))
-            self.change_score(obj._points)
 
     def collision_window(self):  #needs to be last for ball to stay inside of window   #alternativ auch mit geschw. vektor richtung bestimmen und zukünfitge kollision prüfen #vllt besser für stationäre Grenzen
         if self._position[0] - self._radius < 0 or self._position[0] + self._radius > WINDOW_X:
@@ -122,7 +126,7 @@ class Rad_txt:
 
 
 #  screen, color, size, bounce, points, position[[][]], velocity[]
-LINE1= Line(screen, (0,0,0), 50, 1, 1, [[0,650],[250,800]], [0,0])
-LINE2= Line(screen, (0,0,0), 50, 1, 1, [[550,800],[800,650]], [0,0])
-LINE3= Line(screen, (0,0,0), 50, 1, 1, [[0,700],[800,700]], [0,0])
-LINE_LIST = ["here is flipper_L", "here is flipper_R", LINE1, LINE2, LINE3] #ersten zwei eintägen werden jeden Loop überarbeitet
+LINE1= Line(screen, (0,0,0), 50, 0.8, 1, [[0,650],[250,800]], [0,0])
+LINE2= Line(screen, (0,0,0), 50, 0.8, 1, [[550,800],[800,650]], [0,0])
+LINE3= Line(screen, (0,0,0), 50, 1, 1, [[0,800],[800,800]], [0,0])
+LINE_LIST = ["here is flipper_L", "here is flipper_R", LINE1, LINE2] #ersten zwei eintägen werden jeden Loop überarbeitet

@@ -114,7 +114,7 @@ while variables.running:
     #---------------------------------------------------------------------------------------------------------------
 
     #Game
-    if variables.game_state == "play": # main game
+    if variables.game_state == "play": # main gdame
         if variables.left_flipper> -np.pi/4 :
             variables.left_flipper -= 0.05
         if variables.right_flipper > -np.pi/4 :
@@ -141,8 +141,8 @@ while variables.running:
                 variables.right_flipper += 0.5
         
         #Flippers
-        LINE_LIST[0] = Line(screen, (255,255,255), 20, 1, 1, [[250,800],[250+FLIPPER_LENGTH*np.cos(-variables.left_flipper) ,800+FLIPPER_LENGTH*np.sin(-variables.left_flipper) ]], [0,0])#left
-        LINE_LIST[1] = Line(screen, (255,255,255), 20, 1, 1, [[550,800],[550-FLIPPER_LENGTH*np.cos(-variables.right_flipper),800+FLIPPER_LENGTH*np.sin(-variables.right_flipper)]], [0,0])#right
+        LINE_LIST[0] = Line(screen, (255,255,255), 20, 1.5, 1, [[250,800],[250+FLIPPER_LENGTH*np.cos(-variables.left_flipper) ,800+FLIPPER_LENGTH*np.sin(-variables.left_flipper) ]], [0,0])#left
+        LINE_LIST[1] = Line(screen, (255,255,255), 20, 1.5, 1, [[550,800],[550-FLIPPER_LENGTH*np.cos(-variables.right_flipper),800+FLIPPER_LENGTH*np.sin(-variables.right_flipper)]], [0,0])#right
 
         #background
         if variables.current_stage == 1:
@@ -159,19 +159,34 @@ while variables.running:
         #ball handler
         for x in range(len(variables.ball_list)):
             variables.ball_list[x].update_position()
+            variables.velxi = variables.ball_list[x]._velocity[0]
+            variables.velyi = variables.ball_list[x]._velocity[0]
+
             for y in range(len(variables.ball_list)): #collision with other balls
-                if y is not x: #dont check collision with self
-                    variables.ball_list[x].collision_ball(variables.ball_list[y])
-            for y in range(len(LINE_LIST)): #checks all Line collisions
-                variables.ball_list[x].collision_line(LINE_LIST[y])
+                if variables.collsion_counter == 0:
+                    if y is not x: #dont check collision with self
+                        variables.ball_list[x].collision_ball(variables.ball_list[y])
+                    if not (variables.ball_list[x]._velocity[0] == variables.velxi or variables.ball_list[x]._velocity[1] == variables.velyi):
+                        variables.collsion_counter = 1
                 
-            variables.ball_list[x].collision_window()
-            variables.ball_list[x].draw()
+            for y in range(len(LINE_LIST)): #checks all Line collisions
+                if variables.collsion_counter == 0:
+                    variables.ball_list[x].collision_line(LINE_LIST[y])
+                    if not (variables.ball_list[x]._velocity[0] == variables.velxi or variables.ball_list[x]._velocity[1] == variables.velyi):
+                            variables.collsion_counter = 1
+            
+            if variables.collsion_counter == 0: #collision window 
+                variables.ball_list[x].collision_window()
+                if not (variables.ball_list[x]._velocity[0] == variables.velxi or variables.ball_list[x]._velocity[1] == variables.velyi):
+                            variables.collsion_counter = 1
+            
+            variables.collsion_counter = 0  #resets counter to 0  
+            variables.ball_list[x].draw() #renders ball
 
             if (variables.ball_list[x]._position[1]>850):
                 variables.ball_list.remove(variables.ball_list[x]) #removes ball privilegs
                 break
-        if variables.score > variables.extra_balls_counter #gives extra ball for every
+        if variables.score > variables.extra_balls_counter: #gives extra ball for every
             variables.extra_balls_counter = 2 * variables.extra_balls_counter
             variables.availible_balls += 1
 

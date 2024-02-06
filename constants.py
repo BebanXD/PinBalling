@@ -4,7 +4,7 @@ import numpy as np
 WINDOW_X = 800
 WINDOW_Y = 900
 screen   = pygame.display.set_mode([WINDOW_X, WINDOW_Y]) # essential
-FPS      = 60 # frames per sec
+FPS      = 600 # frames per sec
 
 #fonts
 font1    = pygame.font.Font("Misc\WhoAsksSatan.ttf",50)
