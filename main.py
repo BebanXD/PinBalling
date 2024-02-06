@@ -163,24 +163,24 @@ while variables.running:
             variables.velyi = variables.ball_list[x]._velocity[0]
 
             for y in range(len(variables.ball_list)): #collision with other balls
-                if variables.collsion_counter == 0:
+                if variables.collision_counter == 0:
                     if y is not x: #dont check collision with self
                         variables.ball_list[x].collision_ball(variables.ball_list[y])
                     if not (variables.ball_list[x]._velocity[0] == variables.velxi or variables.ball_list[x]._velocity[1] == variables.velyi):
-                        variables.collsion_counter = 1
+                        variables.collision_counter = 1
                 
             for y in range(len(LINE_LIST)): #checks all Line collisions
-                if variables.collsion_counter == 0:
+                if variables.collision_counter == 0:
                     variables.ball_list[x].collision_line(LINE_LIST[y])
                     if not (variables.ball_list[x]._velocity[0] == variables.velxi or variables.ball_list[x]._velocity[1] == variables.velyi):
-                            variables.collsion_counter = 1
+                            variables.collision_counter = 1
             
-            if variables.collsion_counter == 0: #collision window 
+            if variables.collision_counter == 0: #collision window 
                 variables.ball_list[x].collision_window()
                 if not (variables.ball_list[x]._velocity[0] == variables.velxi or variables.ball_list[x]._velocity[1] == variables.velyi):
-                            variables.collsion_counter = 1
+                            variables.collision_counter = 1
             
-            variables.collsion_counter = 0  #resets counter to 0  
+            variables.collision_counter = 0  #resets counter to 0  
             variables.ball_list[x].draw() #renders ball
 
             if (variables.ball_list[x]._position[1]>850):
