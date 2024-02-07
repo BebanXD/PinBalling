@@ -29,7 +29,7 @@ while variables.running:
     #---------------------------------------------------------------------------------------------------------------
 
     #music
-    if variables.game_state ==("play" or "start")and variables.sound_counter == 0:
+    if (variables.game_state == "play" or variables.game_state == "start" ) and variables.sound_counter == 0:
         pygame.mixer.music.load('Audio\SONG.mp3')
         pygame.mixer.music.play()
         variables.sound_counter = 1
@@ -140,10 +140,11 @@ while variables.running:
             if variables.right_flipper < np.pi/4 :
                 variables.right_flipper += 0.5
         
-        #Flippers
-        LINE_LIST[0] = Line(screen, (255,255,255), 20, 1.5, 1, [[250,800],[250+FLIPPER_LENGTH*np.cos(-variables.left_flipper) ,800+FLIPPER_LENGTH*np.sin(-variables.left_flipper) ]], [0,0])#left
-        LINE_LIST[1] = Line(screen, (255,255,255), 20, 1.5, 1, [[550,800],[550-FLIPPER_LENGTH*np.cos(-variables.right_flipper),800+FLIPPER_LENGTH*np.sin(-variables.right_flipper)]], [0,0])#right
-
+        #Flippers and moving platform
+        LINE_LIST[0] = Line(screen, (255,255,255), 10, 1.5, 0, [[250,800],[250+FLIPPER_LENGTH*np.cos(-variables.left_flipper) ,800+FLIPPER_LENGTH*np.sin(-variables.left_flipper) ]], [0,0])#left
+        LINE_LIST[1] = Line(screen, (255,255,255), 10, 1.5, 0, [[550,800],[550-FLIPPER_LENGTH*np.cos(-variables.right_flipper),800+FLIPPER_LENGTH*np.sin(-variables.right_flipper)]], [0,0])#right
+        LINE_LIST[2] = Line(screen, (255,233,0), 40, 2, 30, [[200,300],[500,300]], [t/1000,0])#right
+        
         #background
         if variables.current_stage == 1:
             screen.blit(stage1_background,(0,0))
@@ -153,38 +154,19 @@ while variables.running:
 
         #draw all objects
         for x in range(len(LINE_LIST)): 
+            LINE_LIST[x].update_position()
             LINE_LIST[x].draw()
 
         
         #ball handler
         for x in range(len(variables.ball_list)):
             variables.ball_list[x].gravity_update()
-            variables.ball_list[x].update_position()
-            variables.velxi = variables.ball_list[x]._velocity[0]
-            variables.velyi = variables.ball_list[x]._velocity[0]
-
             for y in range(len(variables.ball_list)): #collision with other balls
-                if variables.collision_counter == 0:
-                    if y is not x: #dont check collision with self
-                        variables.ball_list[x].collision_ball(variables.ball_list[y])
-                        variables.ball_list[x].update_position()
-                    if not (variables.ball_list[x]._velocity[0] == variables.velxi or variables.ball_list[x]._velocity[1] == variables.velyi):
-                        variables.collision_counter = 1
-                
+                if y is not x: #dont check collision with self
+                    variables.ball_list[x].collision_ball(variables.ball_list[y])
             for y in range(len(LINE_LIST)): #checks all Line collisions
-                if variables.collision_counter == 0:
-                    variables.ball_list[x].collision_line(LINE_LIST[y])
-                    variables.ball_list[x].update_position()
-                    if not (variables.ball_list[x]._velocity[0] == variables.velxi or variables.ball_list[x]._velocity[1] == variables.velyi):
-                            variables.collision_counter = 1
-            
-            if variables.collision_counter == 0: #collision window 
-                variables.ball_list[x].collision_window()
-                variables.ball_list[x].update_position()
-                if not (variables.ball_list[x]._velocity[0] == variables.velxi or variables.ball_list[x]._velocity[1] == variables.velyi):
-                            variables.collision_counter = 1
-            
-            variables.collision_counter = 0  #resets counter to 0  
+                variables.ball_list[x].collision_line(LINE_LIST[y])
+            variables.ball_list[x].collision_window() #checks window collision
             variables.ball_list[x].draw() #renders ball
 
             if (variables.ball_list[x]._position[1]>850):
@@ -217,16 +199,16 @@ while variables.running:
         for x in range(len(variables.rad_pic_list)):
             variables.rad_pic_list[x].transform
             variables.rad_pic_list[x].draw()
-            if t > variables.rad_pic_list[x]._growthtime : #removes after out of screen to safe memory
+            if t > variables.rad_pic_list[x]._growthtime : #removes after timing out, to safe memory
                 variables.rad_pic_list.remove(variables.rad_pic_list[x])
-                break
+                break #quits rendering, could be solved better
            
         for x in range(len(variables.rad_txt_list)):
             variables.rad_txt_list[x].draw()
             variables.rad_txt_list[x].update_position()
             if variables.rad_txt_list[x]._position[0] > WINDOW_X: #removes after out of screen to safe memory
                 variables.rad_txt_list.remove(variables.rad_txt_list[x])
-                break
+                break #quits rendering, could be solved better
 
         #UI Overlay
         for x in range(variables.availible_balls): #balls ui

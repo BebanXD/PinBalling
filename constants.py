@@ -37,14 +37,14 @@ FIRE1 = pygame.transform.scale(pygame.image.load("Image\FIRE1.png"), (300, 100))
 FIRE2 = pygame.transform.scale(pygame.image.load("Image\FIRE2.png"), (300, 100))
 FIRE3 = pygame.transform.scale(pygame.image.load("Image\FIRE3.png"), (300, 100))
 FIRE4 = pygame.transform.scale(pygame.image.load("Image\FIRE4.png"), (300, 100))
-FIRELIST = [FIRE1,FIRE2,FIRE3,FIRE4] # List of frame
+FIRELIST = [FIRE1,FIRE2,FIRE3,FIRE4] # List of frames for fire "animation"
 
 #radness
 SOUNDLIST    = ["Audio/EAGLE_SCREACH.mp3","Audio\HELL_YEAH.mp3","Audio\RAAAAH.mp3","Audio\SICK_ASS_RIFF.mp3"]
 IMAGELIST    = ["Image\RANDOM_1.jpg","Image\RANDOM_2.webp"]
 TEXTLIST     = ["HELL YEAH","ROCK AND ROLL!"]
 
-#rest
+#dynamics
 GRAVITY = [0,1] #gravity in (x,y)
 FLIPPER_LENGTH = 100
 

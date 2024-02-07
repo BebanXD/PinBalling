@@ -1,87 +1,86 @@
 import pygame
-import sys
 import math
 
-# Initialisierung von Pygame
+# Define colors
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
+
+# Initialize Pygame
 pygame.init()
 
-# Bildschirmgröße
-WIDTH, HEIGHT = 800, 600
+# Set up the screen
+screen_width = 800
+screen_height = 600
+screen = pygame.display.set_mode((screen_width, screen_height))
+pygame.display.set_caption("Ball and Circle Reflection")
 
-# Farben
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
+# Define constants
+BALL_RADIUS = 20
+CIRCLE_RADIUS = 100
+CIRCLE_CENTER = (screen_width // 2, screen_height // 2)
 
-# Geschwindigkeit des Balls
-velocity = [5, 5]
+# Create Ball class
+class Ball(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.Surface((BALL_RADIUS*2, BALL_RADIUS*2))
+        self.image.fill(BLACK)
+        pygame.draw.circle(self.image, WHITE, (BALL_RADIUS, BALL_RADIUS), BALL_RADIUS)
+        self.rect = self.image.get_rect()
+        self.rect.center = (screen_width // 4, screen_height // 2)
+        self.speed = 5
+        self.angle = math.pi / 4  # Initial angle of motion
 
-# Erstellen des Bildschirms
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Ball-Wand Kollision")
+    def update(self):
+        # Move the ball
+        self.rect.x += self.speed * math.cos(self.angle)
+        self.rect.y += self.speed * math.sin(self.angle)
+        
+        # Check for collision with the circle
+        if pygame.sprite.collide_rect(self, circle):
+            # Calculate the angle of reflection
+            dx = self.rect.centerx - CIRCLE_CENTER[0]
+            dy = self.rect.centery - CIRCLE_CENTER[1]
+            angle_to_center = math.atan2(dy, dx)
+            self.angle = 2 * angle_to_center - self.angle
+            
+        # Check for collision with window walls
+        if self.rect.left <= 0 or self.rect.right >= screen_width:
+            self.angle = math.pi - self.angle
+        if self.rect.top <= 0 or self.rect.bottom >= screen_height:
+            self.angle = -self.angle
 
-# Position und Radius des Balls
-ball_radius = 30
-ball_x, ball_y = WIDTH // 2, HEIGHT // 2
+# Create Circle class
+class Circle(pygame.sprite.Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.Surface((CIRCLE_RADIUS*2, CIRCLE_RADIUS*2), pygame.SRCALPHA)
+        pygame.draw.circle(self.image, (0, 0, 255, 100), (CIRCLE_RADIUS, CIRCLE_RADIUS), CIRCLE_RADIUS)
+        self.rect = self.image.get_rect(center=CIRCLE_CENTER)
 
-# Definition der schrägen Wand
-wall_start = (200, 200)
-wall_end = (600, 500)
+# Create sprites
+ball = Ball()
+circle = Circle()
 
-# Berechnen der Vektoren für die schräge Wand
-wall_vector = (wall_end[0] - wall_start[0], wall_end[1] - wall_start[1])
-wall_length = math.sqrt(wall_vector[0] ** 2 + wall_vector[1] ** 2)
-wall_unit_vector = (wall_vector[0] / wall_length, wall_vector[1] / wall_length)
+all_sprites = pygame.sprite.Group()
+all_sprites.add(ball, circle)
 
+# Main loop
+running = True
 clock = pygame.time.Clock()
-
-# Funktion zur Berechnung des einfallenden Winkels
-def calculate_incident_angle(velocity, wall_unit_vector):
-    velocity_vector    = pygame.math.Vector2(velocity)
-    wall_normal_vector = pygame.math.Vector2(-wall_unit_vector[1], wall_unit_vector[0])
-    incident_angle = velocity_vector.angle_to(wall_normal_vector)
-    return incident_angle
-
-# Funktion zur Berechnung der Distanz zwischen zwei Punkten
-def distance(point1, point2):
-    return math.sqrt((point1[0] - point2[0]) ** 2 + (point1[1] - point2[1]) ** 2)
-
-# Haupt-Loop
-while True:
-    screen.fill(WHITE)
-
+while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+            running = False
 
-    # Bewegung des Balls
-    ball_x += velocity[0]
-    ball_y += velocity[1]
+    # Update
+    all_sprites.update()
 
-    # Kollision mit den Wänden
-    # Überprüfung der Kollision mit der schrägen Wand
-    ball_vector = pygame.math.Vector2(ball_x - wall_start[0], ball_y - wall_start[1])
-    dot_product = ball_vector.dot(wall_unit_vector)
-    dot_product = max(0, min(dot_product, wall_length))
-    closest_point = (wall_start[0] + dot_product * wall_unit_vector[0], wall_start[1] + dot_product * wall_unit_vector[1])
-
-    if distance((ball_x, ball_y), closest_point) <= ball_radius:
-        incident_angle = calculate_incident_angle(velocity, wall_unit_vector)
-        velocity = pygame.math.Vector2(velocity).rotate(-2 * incident_angle)
-
-    # Kollision mit den vertikalen Wänden
-    if ball_x + ball_radius >= WIDTH or ball_x - ball_radius <= 0:
-        velocity[0] = -velocity[0]  # Richtung umkehren
-
-    # Kollision mit den horizontalen Wänden
-    if ball_y + ball_radius >= HEIGHT or ball_y - ball_radius <= 0:
-        velocity[1] = -velocity[1]  # Richtung umkehren
-
-    # Zeichne den Ball
-    pygame.draw.circle(screen, RED, (int(ball_x), int(ball_y)), ball_radius)
-
-    # Zeichne die schräge Wand
-    pygame.draw.line(screen, RED, wall_start, wall_end, 3)
+    # Draw
+    screen.fill((255, 255, 255))
+    all_sprites.draw(screen)
 
     pygame.display.flip()
     clock.tick(60)
+
+pygame.quit()
