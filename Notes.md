@@ -13,7 +13,6 @@ enter                  spawn ball with curent meter
 any key                input name into highscore
 enter                  submit input name
 
-
 # Ideas              scrapped due to time constraints 😢
 Shop trade highscore vs more balls. better bounce, multiplier and special abilities
 More Meter maybe more bounce to have more control over the ball

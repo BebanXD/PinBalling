@@ -143,7 +143,7 @@ while variables.running:
         #Flippers and moving platform
         LINE_LIST[0] = Line(screen, (255,255,255), 10, 1.5, 0, [[250,800],[250+FLIPPER_LENGTH*np.cos(-variables.left_flipper) ,800+FLIPPER_LENGTH*np.sin(-variables.left_flipper) ]], [0,0])#left
         LINE_LIST[1] = Line(screen, (255,255,255), 10, 1.5, 0, [[550,800],[550-FLIPPER_LENGTH*np.cos(-variables.right_flipper),800+FLIPPER_LENGTH*np.sin(-variables.right_flipper)]], [0,0])#right
-        LINE_LIST[2] = Line(screen, (255,233,0), 40, 2, 30, [[200,300],[500,300]], [t/1000,0])#right
+        LINE_LIST[2] = Line(screen, (255,233,0), 40, 2, 30,    [[300,300],[500,300]], [t/1000,0])#right
         
         #background
         if variables.current_stage == 1:
@@ -156,7 +156,6 @@ while variables.running:
         for x in range(len(LINE_LIST)): 
             LINE_LIST[x].update_position()
             LINE_LIST[x].draw()
-
         
         #ball handler
         for x in range(len(variables.ball_list)):
@@ -185,8 +184,8 @@ while variables.running:
             if variables.radness_level:
                 #text
                 if probability_per_second(variables.radness_level**2):
-                    x = t%len(TEXTLIST)
-                    variables.rad_txt_list.append(Rad_txt(font3.render(TEXTLIST[x],False,"Red"),[-300,(np.random.rand()*WINDOW_Y)],[2+np.random.rand()*10,0],np.random.rand()*100))
+                    x = t%len(TEXTLIST) #werid way to pick random element idk
+                    variables.rad_txt_list.append(Rad_txt(font3.render(TEXTLIST[x],False,"Red"),[-300,(np.random.rand()*WINDOW_Y)],[t/1000,0],np.random.rand()*100))
                 #image
                 if probability_per_second(variables.radness_level**2):
                     x = t%len(IMAGELIST)
@@ -260,7 +259,7 @@ while variables.running:
                         variables.record_counter = 1
                         variables.error_event_counter = 3 #eigentlich kein error aber egal
                         with open("Highscores.txt", "a") as file:
-                            file.write(variables.input_string + " " + str(variables.score) + '\n')
+                            file.write(variables.input_string + " " + str(variables.score) + "\n")
                     else:
                          variables.error_event_counter = 4
                          if variables.radness_level == 5:  pygame.mixer.Sound('Audio\SICK_ASS_RIFF.mp3').play()  

@@ -17,7 +17,7 @@ class Ball:
         self._gravity = gravity
         self._counter = 0
 
-    def update_position(self): #update position due to speed, #update speed due to grav, # upda
+    def update_position(self): #update position due to speed, #caps max speed
         if self._velocity[0] > variables.max_x:
             self._velocity[0] = variables.max_x
         if self._velocity[1] > variables.max_y:
@@ -28,18 +28,44 @@ class Ball:
     @staticmethod
     def change_score(Wert):
         variables.score = variables.score + Wert
-    @staticmethod 
-    def collision_checker(Ball_point, radius, Start_point, End_point, thickness): #only used for Line element collsision
-        zähler = abs((End_point[0] - Start_point[0]) * (Start_point[1] - Ball_point[1]) + (Start_point[1] - End_point[1]) * (Start_point[0] - Ball_point[0]))
-        nenner = math.sqrt((End_point[0] - Start_point[0])**2 + (End_point[1] - Start_point[1])**2)
-        distance = zähler / nenner
-        return distance <= (thickness/2 + radius) #maybe durch 2 für thickness machen idk
-    
-    def angle_between_points(self, ball): #return the angle  between two points by using a vector and skalar product, with x parallel vecotr of length 1
-        connection_vector = pygame.math.Vector2( ball._position[0]-self._position[0] , ball._position[1]-self._position[1]) #relative vector 
-        vector_length        = math.sqrt(connection_vector[0] ** 2 + connection_vector[1] ** 2)
-        angle = np.arccos (vector_length / (connection_vector[0]+connection_vector[1]*0.001)) #ignor y component beacause v2= 1,0
-        return angle
+    @staticmethod
+    def betrag(x,y): #einfache drehmatrix
+        return np.sqrt(x**2 +y**2) 
+    @staticmethod
+    def transformation_x(x,y,angle): #einfache drehmatrix
+        return x*np.cos(angle) + y*np.sin(angle)
+    @staticmethod
+    def transformation_y(x,y,angle): #einfache drehmatrix
+        return x*np.sin(angle) - y*np.cos(angle)
+    @staticmethod
+    def angle_checker(x, y):
+        theta = np.arctan(np.abs(y)/np.abs(x))  # Compute the angle in radians
+        if x < 0 and y > 0:
+            theta =  np.pi - theta
+        if x <= 0 and y <= 0: # vllt bie größer gleich hier fehler
+            theta = theta + np.pi
+        if x > 0 and y < 0:
+            theta =  np.pi *2 -theta
+        return theta   # Convert radians to degrees
+
+    def collision_checker(self, line): #uses drehmatrix to turn until the line is parallel to the x axis
+        if self.betrag(line._position[0][0],line._position[0][1]) < self.betrag(line._position[1][0],line._position[1][1]): #shortest vector becomes x1
+            x1 = line._position[0][0]
+            y1 = line._position[0][1]
+            angle = self.angle_checker  (line._position[1][0]-x1,line._position[1][1]-y1)
+            x2_t = self.transformation_x(line._position[1][0]-x1,line._position[1][1]-y1,angle) #x end intervall
+            y2_t = self.transformation_y(line._position[1][0]-x1,line._position[1][1]-y1,angle) #y end intervall
+        else: #if the end vector of line is smaller, the  intervall is limited by the startingvektor
+            x1 = line._position[1][0]
+            y1 = line._position[1][1]
+            angle = self.angle_checker  (line._position[0][0]-x1,line._position[0][1]-y1)
+            x2_t = self.transformation_x(line._position[0][0]-x1,line._position[0][1]-y1,angle) #x end intervall
+            y2_t = self.transformation_y(line._position[0][0]-x1,line._position[0][1]-y1,angle) #y end intervall
+        x_t = self.transformation_x(self._position[0]-x1,self._position[1]-y1,angle) # x transformed
+        y_t = self.transformation_y(self._position[0]-x1,self._position[1]-y1,angle) # y transformed
+        if ((x_t + self._radius) > 0)  and ((x_t- self._radius) < x2_t ): #checks if x coord. is in intevall 
+            if ((y_t+ self._radius) > (0 -line._size/2))  and ((y_t - self._radius) < (y2_t + line._size/2)): #checks if y coord. is in  the intevall
+                return True
 
     def angle_between_line(self, line): #gets angle
         line_vector        = pygame.math.Vector2(line._position[0][0]-line._position[1][0] , line._position[0][1] -line._position[1][1])
@@ -49,9 +75,9 @@ class Ball:
         velocity_vector    = pygame.math.Vector2(self._velocity[0],self._velocity[1])
         incident_angle     = (velocity_vector.angle_to(line_normal_vector)+90)* (np.pi/180)
         return incident_angle
-
+    
     def collision_line(self, line): # regarding the angle reflects the ball
-        if self.collision_checker(self._position, self._radius, line._position[0], line._position[1], line._size):
+        if self.collision_checker(line):
             angle = self.angle_between_line(line) 
             v_betrag = np.sqrt(self._velocity[0]**2 + self._velocity[1]**2)
             self._velocity[0] = (v_betrag * ( np.cos (angle)) + line._velocity[0]) * line._bounce 
@@ -59,6 +85,12 @@ class Ball:
             v_betrag = np.sqrt(self._velocity[0]**2 + self._velocity[1]**2)
             self.update_position()
             self.change_score(line._points)
+
+    def angle_between_points(self, ball): #return the angle  between two points by using a vector and skalar product, with x parallel vecotr of length 1
+        connection_vector = pygame.math.Vector2( ball._position[0]-self._position[0] , ball._position[1]-self._position[1]) #relative vector 
+        vector_length        = math.sqrt(connection_vector[0] ** 2 + connection_vector[1] ** 2)
+        angle = np.arccos (vector_length / (connection_vector[0]+(connection_vector[1]*0.001))) #ignor y component beacause v2= 1,0
+        return angle
 
     def collision_ball(self, ball): #vllt noch zu primitiv , #macht nur einen impulsaustausch
         distance = ((self._position[0] - ball._position[0]) ** 2 + (self._position[1] - ball._position[1]) ** 2) ** 0.5
@@ -140,7 +172,6 @@ class Rad_txt:
         self._shakyness = shakyness
     def update_position(self):
         self._position[0] += self._velocity[0]
-        self._velocity[1] += self._velocity[1]
         self._position[1] += np.sin(self._velocity[1])* self._shakyness
     def draw(self):
         screen.blit(self._text, (self._position[0],self._position[1]))

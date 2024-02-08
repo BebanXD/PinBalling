@@ -3,9 +3,9 @@ from constants import *
 #overarching variables
 running             = True   # while loop var.
 griddy              = True   # enables grid for testing
-game_state          = "start" #"start" or "play" or "end"
+game_state          = "start"  #"start" or "play" or "end"
 current_stage       = 1      # default set for quick testing
-score               = 0      # tracks score #needed before classes are created
+score               = 0    # tracks score #needed before classes are created
 sound_counter       = 0      # 0 to play music at start #3 to play no music
 
 #start
