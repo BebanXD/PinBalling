@@ -4,7 +4,7 @@ import numpy as np
 WINDOW_X = 800
 WINDOW_Y = 900
 screen   = pygame.display.set_mode([WINDOW_X, WINDOW_Y]) # essential
-FPS      = 600 # frames per sec
+FPS      = 60 # frames per sec
 
 #fonts
 font1    = pygame.font.Font("Misc\WhoAsksSatan.ttf",50)
@@ -41,12 +41,11 @@ FIRELIST = [FIRE1,FIRE2,FIRE3,FIRE4] # List of frames for fire "animation"
 
 #radness
 SOUNDLIST    = ["Audio/EAGLE_SCREACH.mp3","Audio\HELL_YEAH.mp3","Audio\RAAAAH.mp3","Audio\SICK_ASS_RIFF.mp3"]
-IMAGELIST    = ["Image\RANDOM_1.jpg","Image\RANDOM_2.webp"]
-TEXTLIST     = ["HELL YEAH","ROCK AND ROLL!"]
+TEXTLIST     = ["HELL YEAH!","ROCK AND ROLL!", "RAW IRON", "FIRE!!!" , "LETS GO" , " U S A "]
 
 #dynamics
 GRAVITY = [0,1] #gravity in (x,y)
-FLIPPER_LENGTH = 120
+FLIPPER_LENGTH = 110
 
 #End CONSTANTS
 gameoverscreen = pygame.transform.scale(pygame.image.load("Image\END_SCREEN.webp").convert(), (WINDOW_X, WINDOW_Y))

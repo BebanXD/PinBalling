@@ -2,7 +2,7 @@ from constants import *
 
 #overarching variables
 running             = True   # while loop var.
-griddy              = True   # enables grid for testing
+griddy              = False   # enables grid for testing
 game_state          = "start"  #"start" or "play" or "end"
 current_stage       = 1      # default set for quick testing
 score               = 0    # tracks score #needed before classes are created
@@ -21,12 +21,13 @@ ballskin            = BALLSKIN_LIST[0]          # keeps track of current balls i
 #play
 max_balls           = 5             # max amounts of balls #normal 3
 availible_balls     = max_balls     # keeps track of still availible balls
-extra_balls_counter = 1000          # starting point for when to get an extra ball
+extra_balls_counter = 100          # starting point for when to get an extra ball
 ball_list           = []            # keeps track of current balls in game
 left_flipper        = 0             # position left flipper
 right_flipper       = 0             # position right flipper
 charge              = 0             # powermeter für Abschussrampe 
 t_old               = 0             # time diff const, at point of ballspawn, for ball not to spawn
+t_old2              = 0             # to prevent double collision with flipper
 max_x               = 15            # eig const
 max_y               = 15            # eig const
 

@@ -115,9 +115,9 @@ while variables.running:
 
     #Game
     if variables.game_state == "play": # main gdame
-        if variables.left_flipper> -np.pi/4 :
+        if variables.left_flipper> -np.pi/3 :
             variables.left_flipper -= 0.05
-        if variables.right_flipper > -np.pi/4 :
+        if variables.right_flipper > -np.pi/3 :
             variables.right_flipper -= 0.05
         if variables.charge > 0:
             variables.charge -= 1
@@ -126,24 +126,27 @@ while variables.running:
         for event in pygame.event.get(): #inputs
             if event.type == pygame.KEYDOWN:
                 if (event.key == pygame.K_RETURN) or (event.key == pygame.K_KP_ENTER)  : #spawns ball if balls are left
-                    if (variables.availible_balls > 0) and t > variables.t_old + 120 :    
-                        variables.ball_list.append(Ball(screen,variables.ballskin,1,30,[WINDOW_X/2,WINDOW_X/2],[variables.charge/4,0],GRAVITY))
+                    if (variables.availible_balls > 0) and t > variables.t_old + 180 :
+                        if  t % 2 == 0: #for random spawn direction #right  
+                            variables.ball_list.append(Ball(screen,variables.ballskin,1,30,[WINDOW_X/2,WINDOW_X/2],[variables.charge/4,0],GRAVITY))
+                        if t % 2  == 1: #for random spawn direction  #left
+                            variables.ball_list.append(Ball(screen,variables.ballskin,1,30,[WINDOW_X/2,WINDOW_X/2],[-variables.charge/4,0],GRAVITY))
                         variables.availible_balls -= 1
                         variables.t_old=t
                 if (event.key == pygame.K_SPACE): #boosts ball inital speed
                     if variables.charge < 100:
-                        variables.charge += 10
+                        variables.charge += 20
         if keys[pygame.K_LEFT] :
-            if variables.left_flipper< np.pi/4 :
-                variables.left_flipper+= 0.5
+            if variables.left_flipper< np.pi/5 :
+                variables.left_flipper+= 0.25
         if keys[pygame.K_RIGHT]:
-            if variables.right_flipper < np.pi/4 :
-                variables.right_flipper += 0.5
+            if variables.right_flipper < np.pi/5 :
+                variables.right_flipper += 0.25
         
         #Flippers and moving platform
-        LINE_LIST[0] = Line(screen, (255,255,255), 10, 1.5, 0, [[250,800],[250+FLIPPER_LENGTH*np.cos(-variables.left_flipper) ,800+FLIPPER_LENGTH*np.sin(-variables.left_flipper) ]], [0,0])#left
-        LINE_LIST[1] = Line(screen, (255,255,255), 10, 1.5, 0, [[550,800],[550-FLIPPER_LENGTH*np.cos(-variables.right_flipper),800+FLIPPER_LENGTH*np.sin(-variables.right_flipper)]], [0,0])#right
-        LINE_LIST[2] = Line(screen, (255,233,0), 40, 2, 30,    [[300,300],[500,300]], [t/1000,0])#right
+        LINE_LIST[0] = Line(screen, (255,255,255), 20, 1.7, 1, [[250,800],[250+FLIPPER_LENGTH*np.cos(-variables.left_flipper) ,800+FLIPPER_LENGTH*np.sin(-variables.left_flipper) ]], [0,0])#left
+        LINE_LIST[1] = Line(screen, (255,255,255), 20, 1.7, 1, [[550-FLIPPER_LENGTH*np.cos(-variables.right_flipper),800+FLIPPER_LENGTH*np.sin(-variables.right_flipper)],[550,800]], [0,0])#right
+        LINE_LIST[2] = Line(screen, (255,0,0)  , 40, 1.5,30, [[300,300],[500,300]], [t/1000,0]) #floating platform
         
         #background
         if variables.current_stage == 1:
@@ -168,7 +171,7 @@ while variables.running:
             variables.ball_list[x].collision_window() #checks window collision
             variables.ball_list[x].draw() #renders ball
 
-            if (variables.ball_list[x]._position[1]>850):
+            if (variables.ball_list[x]._position[1]>875):
                 variables.ball_list.remove(variables.ball_list[x]) #removes ball privilegs
                 break
         if variables.score > variables.extra_balls_counter: #gives extra ball for every
@@ -185,22 +188,11 @@ while variables.running:
                 #text
                 if probability_per_second(variables.radness_level**2):
                     x = t%len(TEXTLIST) #werid way to pick random element idk
-                    variables.rad_txt_list.append(Rad_txt(font3.render(TEXTLIST[x],False,"Red"),[-300,(np.random.rand()*WINDOW_Y)],[t/1000,0],np.random.rand()*100))
-                #image
-                if probability_per_second(variables.radness_level**2):
-                    x = t%len(IMAGELIST)
-                    variables.rad_pic_list.append(Rad_pic(pygame.image.load(IMAGELIST[x]),[np.random.rand()*WINDOW_X,np.random.rand()*WINDOW_X],[50,50],0.1,t+(2+np.random.rand()*5)*600))
+                    variables.rad_txt_list.append(Rad_txt(font3.render(TEXTLIST[x],False,"Red"),[-300,(np.random.rand()*WINDOW_Y)],[2+ np.random.rand()*5, 0]))
                 #sound
                 if probability_per_second(variables.radness_level**2):
                     x = t%len(SOUNDLIST)
                     pygame.mixer.Sound(SOUNDLIST[x]).play()
-
-        for x in range(len(variables.rad_pic_list)):
-            variables.rad_pic_list[x].transform
-            variables.rad_pic_list[x].draw()
-            if t > variables.rad_pic_list[x]._growthtime : #removes after timing out, to safe memory
-                variables.rad_pic_list.remove(variables.rad_pic_list[x])
-                break #quits rendering, could be solved better
            
         for x in range(len(variables.rad_txt_list)):
             variables.rad_txt_list[x].draw()
@@ -213,7 +205,7 @@ while variables.running:
         for x in range(variables.availible_balls): #balls ui
             screen.blit(pygame.transform.scale(pygame.image.load("Image\LifeSkull.png"), (70, 70)),(25,800-x*70))
         screen.blit(font3.render(f"{(variables.score)}",False,"Red"),(45,45))
-        pygame.draw.rect(screen, (255, 255, 255), (715-10, 875-(2*100)-10          , 50+(10)*2 ,200+(10)*2), 5) #chargemeter background 2
+        pygame.draw.rect(screen, (255, 255, 255), (715-10, 875-(2*100)-10      , 50+(10)*2 ,200+(10)*2), 5) #chargemeter background 2
         pygame.draw.rect(screen, (0, 0, 0),   (715-5 , 875-(2*100)-5           , 50+(5)*2  ,200+(5)*2) , 5) #chargemeter background
         pygame.draw.rect(screen, (255, 0, 0), (715   , 875-(2*variables.charge), 50    ,2*variables.charge)) #chargemeter
         #---------------------------------------------------------------------------------------------------------------

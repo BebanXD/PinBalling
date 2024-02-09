@@ -1,13 +1,14 @@
 # Gameplay
 escape                 quit game
+
 ## Start
-arrow left right       move rectangle
-spacebar               to select
+arrow left, right      move rectangle
+spacebar, enter        to select
 
 ## Play
-arrow left right       move flippers 
+arrow left, right      move flippers 
 spam spacebar          increase ball speed  
-enter                  spawn ball with curent meter
+enter                  spawn ball with curent speed meter
 
 ## End
 any key                input name into highscore
@@ -21,6 +22,7 @@ Diffrent balls have diffrent atributes
 Random Events like: 
 Spooky Ball, y und x grav haben sin(x) compoenente addiert für 3 sec ca.
 MAKE IT EVEN MORE RAD!
+removed random hard pictures appearing and disappereaing 
 
 
 # Sources 
